@@ -1,7 +1,9 @@
 package com.alesmontaldo.network_controller.domain.device.persistance;
 
+import com.alesmontaldo.network_controller.codegen.types.AccessPoint;
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.codegen.types.Gateway;
+import com.alesmontaldo.network_controller.codegen.types.Switch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,9 +24,6 @@ public class DeviceRepositoryTest {
 
     @Autowired
     private DeviceMongoRepository deviceMongoRepository;
-
-    @Autowired
-    private DeviceMapper deviceMapper;
 
     private GatewayDocument testGateway;
 
@@ -94,9 +93,9 @@ public class DeviceRepositoryTest {
         assertThat(gatewayResult.get()).isInstanceOf(Gateway.class);
         
         assertThat(switchResult).isPresent();
-        assertThat(switchResult.get()).isInstanceOf(com.alesmontaldo.network_controller.codegen.types.Switch.class);
+        assertThat(switchResult.get()).isInstanceOf(Switch.class);
         
         assertThat(apResult).isPresent();
-        assertThat(apResult.get()).isInstanceOf(com.alesmontaldo.network_controller.codegen.types.AccessPoint.class);
+        assertThat(apResult.get()).isInstanceOf(AccessPoint.class);
     }
 }

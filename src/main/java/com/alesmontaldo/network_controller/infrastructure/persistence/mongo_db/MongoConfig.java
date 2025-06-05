@@ -10,7 +10,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @EnableMongoRepositories(basePackages = {
         "com.alesmontaldo.network_controller.domain.club.persistence",
         "com.alesmontaldo.network_controller.domain.athlete.persistence",
-        "com.alesmontaldo.network_controller.domain.activity.persistence"
+        "com.alesmontaldo.network_controller.domain.activity.persistence",
+        "com.alesmontaldo.network_controller.domain.device.persistance"
 })
 public class MongoConfig {
 
