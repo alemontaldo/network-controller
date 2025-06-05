@@ -1,0 +1,81 @@
+# ────────────────────────────────────────────────────────────────────────────────
+# 1) BUILD STAGE: AlmaLinux 9 + Liberica JDK21 via RPM + Gradle nativeCompile
+# ────────────────────────────────────────────────────────────────────────────────
+FROM almalinux:9 AS builder
+
+# Install native-image deps + rpm tools + gcc and development tools
+RUN dnf install -y --setopt=tsflags=nodocs \
+      zlib-devel \
+      curl-minimal \
+      rpm-build \
+      unzip \
+      tar \
+      which \
+      fontconfig \
+      freetype \
+      alsa-lib \
+      libX11 \
+      libXext \
+      libXi \
+      libXrender \
+      libXtst \
+      gcc \
+      glibc-devel \
+      zlib-devel \
+ && dnf clean all
+
+
+# Download & install the aarch64 Liberica Core RPM
+ARG BELL_VERSION=23.1.6+1
+RUN curl -L -o liberica.rpm \
+      "https://download.bell-sw.com/vm/23.1.6/bellsoft-liberica-vm-core-openjdk21.0.6+10-${BELL_VERSION}-linux-aarch64.rpm" \
+ && rpm -ivh liberica.rpm \
+ && rm liberica.rpm
+
+WORKDIR /app
+
+# Copy & make the Gradle wrapper executable
+COPY gradlew .
+COPY gradle gradle/
+RUN chmod +x gradlew
+
+# Copy source
+COPY . .
+
+# Now discover JAVA_HOME and run nativeCompile in one go
+ARG SERVICE_MODULE_NAME=athletic-app
+RUN bash -c "\
+    JAVA_BIN=\$(rpm -ql bellsoft-liberica-vm-core-openjdk21 | grep '/bin/java\$' | head -n1) && \
+    JAVA_HOME=\${JAVA_BIN%/bin/java} && \
+    export JAVA_HOME && \
+    export PATH=\${JAVA_HOME}/bin:\${PATH} && \
+    echo \"Using JAVA_HOME=\${JAVA_HOME}\" && \
+    java -version && \
+    ./gradlew clean nativeCompile \
+      -Dorg.gradle.daemon=false \
+      -Dorg.gradle.java.home=\${JAVA_HOME} \
+      --stacktrace --info \
+"
+
+# ────────────────────────────────────────────────────────────────────────────────
+# 2) RUNTIME STAGE: tiny Debian with only your native binary
+# ────────────────────────────────────────────────────────────────────────────────
+FROM debian:12.6-slim
+
+RUN apt-get update && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --shell /bin/bash app
+
+ENV HOME=/home/app
+WORKDIR ${HOME}
+
+ENV EXECUTABLE_NAME=athletic-app
+COPY --from=builder /app/build/native/nativeCompile/${EXECUTABLE_NAME} ${HOME}/
+RUN chmod +x ${HOME}/${EXECUTABLE_NAME} && chown app:app ${HOME}/${EXECUTABLE_NAME}
+
+# Switch to app user AFTER copying and setting permissions
+USER app
+
+ENV LOCAL_APP_OPTS="--spring.config.location=./config/application.yaml,optional:./config/credentials.properties"
+ENTRYPOINT ["/home/app/athletic-app","${LOCAL_APP_OPTS}"]
+

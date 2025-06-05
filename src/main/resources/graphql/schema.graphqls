@@ -1,0 +1,129 @@
+type Query {
+    allDevicesSorted: [Device!]!
+    deviceByMac(mac: ID): Device
+    fullTopology: Device
+    subtree(mac: ID): Device
+
+    athlete(id: ID) : Athlete
+    search(text: String): [SearchItem!]!
+    clubs(first: Int, after: String): ClubConnection!
+}
+
+type Mutation {
+    addDevice(input: DeviceInput!): Device!
+    createClub(input: ClubInput!): Club!
+}
+
+# --------------------------------------------------
+
+interface Device {
+    mac: ID!
+    uplinkMac: ID
+    downlinkDevices: [Device!]!
+}
+
+type Gateway implements Device {
+    mac: ID!
+    uplinkMac: ID
+    downlinkDevices: [Device!]!
+}
+
+type Switch implements Device {
+    mac: ID!
+    uplinkMac: ID
+    downlinkDevices: [Device!]!
+}
+
+type AccessPoint implements Device {
+    mac: ID!
+    uplinkMac: ID
+    downlinkDevices: [Device!]!
+}
+
+
+# -----------------------
+
+union SearchItem = Club | Athlete
+
+type Club {
+    id: ID!
+    name: String!
+    totalMembers: Int!
+}
+
+type Athlete {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    activities: [Activity!]!
+}
+
+interface Activity {
+    id: ID!
+    description: String!
+    comments: [Comment!]
+}
+
+type Run implements Activity {
+    id: ID!
+    description: String!
+    comments: [Comment!]
+    elevation: Int  # In meters.
+}
+
+type Swim implements Activity {
+    id: ID!
+    description: String!
+    comments: [Comment!]
+    laps: Int
+    indoor: Boolean
+}
+
+type Rowing implements Activity {
+    id: ID!
+    description: String!
+    comments: [Comment!]
+    split: Int  # Seconds per 500 meters.
+}
+
+type Comment {
+    text: String!
+}
+
+# pagination types
+
+type ClubConnection {
+    clubEdges: [ClubEdge!]!
+    pageInfo: PageInfo!
+    totalCount: Int!
+}
+
+type ClubEdge {
+    cursor: String!
+    node: Club!
+}
+
+type PageInfo {
+    hasNextPage: Boolean!
+    endCursor: String
+}
+
+# mutation input types
+
+input DeviceInput {
+    mac: ID!
+    uplinkMac: ID
+    deviceType: DeviceType!
+}
+
+enum DeviceType {
+    GATEWAY
+    SWITCH
+    ACCESS_POINT
+}
+
+#-----------------------
+input ClubInput {
+    name: String!
+    totalMembers: Int!
+}

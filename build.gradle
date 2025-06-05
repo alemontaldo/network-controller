@@ -1,0 +1,78 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version "${spring_boot_version}"
+	id 'io.spring.dependency-management' version "${spring_dependency_management_version}"
+	id 'com.netflix.dgs.codegen' version "${dgs_codegen_version}"
+	id "org.graalvm.buildtools.native" version "${gradle_graalvm_plugin}"
+}
+
+group = 'com.alesmontaldo'
+version = "${version}"
+
+java {
+	sourceCompatibility = '21'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-graphql"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-data-mongodb"
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+
+	implementation "org.mapstruct:mapstruct:${mapstruct_version}"
+
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
+
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+	testImplementation "org.springframework:spring-webflux"
+	testImplementation "org.springframework.graphql:spring-graphql-test"
+}
+
+generateJava {
+	schemaPaths = ["${projectDir}/src/main/resources/graphql"]
+	packageName = 'com.alesmontaldo.network_controller.codegen'
+	includeQueries = ["athlete"]
+	generateClient = true
+	generateDataTypes = true
+}
+
+tasks.register('clientRun', JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.alesmontaldo.network_controller.ClientApp'
+}
+
+tasks.register('clientDgsRun', JavaExec) {
+	classpath = sourceSets.main.runtimeClasspath
+	mainClass = 'com.alesmontaldo.network_controller.ClientDgsApp'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+generateJava {
+	schemaPaths = ["${projectDir}/src/main/resources/graphql"]
+	packageName = 'com.alesmontaldo.network_controller.codegen'
+	includeQueries = ["athlete"]
+	generateClient = true
+	generateDataTypes = true
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+apply plugin: "org.graalvm.buildtools.native"
+
+graalvmNative {
+	binaries {
+		main {
+			imageName = "${project.name}"
+			sharedLibrary = false
+		}
+	}
+}

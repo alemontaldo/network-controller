@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: "network-controller"
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: network-controller_db
+      username: admin
+      password: supersecret
+      authentication-database: admin
+
+  threads:
+    virtual:
+      enabled: true
+
+  graphql:
+    graphiql:
+      enabled: true
+
+logging:
+  level:
+    com.example.network_controller: DEBUG
+    org.springframework.graphql: DEBUG
+    org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer: TRACE
