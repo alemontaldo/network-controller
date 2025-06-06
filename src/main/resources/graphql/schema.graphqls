@@ -1,8 +1,11 @@
+# Custom scalar for MAC addresses
+scalar MacAddress
+
 type Query {
     allDevicesSorted: [Device!]!
-    deviceByMac(mac: ID): Device
+    deviceByMac(mac: MacAddress): Device
     fullTopology: Device
-    subtree(mac: ID): Device
+    subtree(mac: MacAddress): Device
 
     athlete(id: ID) : Athlete
     search(text: String): [SearchItem!]!
@@ -12,7 +15,7 @@ type Query {
 type Mutation {
     addDevice(input: DeviceInput!): Device!
     # extra features
-    deleteDevice(mac: ID!): DeleteDeviceResponse!
+    deleteDevice(mac: MacAddress!): DeleteDeviceResponse!
 
     createClub(input: ClubInput!): Club!
 }
@@ -26,29 +29,29 @@ enum DeviceType {
 }
 
 interface Device {
-    mac: ID!
-    uplinkMac: ID
+    mac: MacAddress!
+    uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Gateway implements Device {
-    mac: ID!
-    uplinkMac: ID
+    mac: MacAddress!
+    uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Switch implements Device {
-    mac: ID!
-    uplinkMac: ID
+    mac: MacAddress!
+    uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type AccessPoint implements Device {
-    mac: ID!
-    uplinkMac: ID
+    mac: MacAddress!
+    uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
@@ -124,15 +127,15 @@ type PageInfo {
 # mutation input types
 
 input DeviceInput {
-    mac: ID!
-    uplinkMac: ID
+    mac: MacAddress!
+    uplinkMac: MacAddress
     deviceType: DeviceType!
 }
 
 type DeleteDeviceResponse {
     success: Boolean!
     message: String
-    deletedMac: ID
+    deletedMac: MacAddress
 }
 
 #-----------------------

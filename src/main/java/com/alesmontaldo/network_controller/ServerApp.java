@@ -18,11 +18,11 @@ public class ServerApp {
 		SpringApplication.run(ServerApp.class, args);
 	}
 
-	@Bean
-	GraphQlSourceBuilderCustomizer graphQlSourceBuilderCustomizer() {
-		return builder -> builder.inspectSchemaMappings(
-				initializer -> initializer.classMapping("Club", Club.class),
-				logger::debug);
-	}
+//	@Bean
+//	GraphQlSourceBuilderCustomizer graphQlSourceBuilderCustomizer() {
+//		return builder -> builder.inspectSchemaMappings(
+//				initializer -> initializer.classMapping("Club", Club.class),
+//				logger::debug);
+//	}
 
 }
