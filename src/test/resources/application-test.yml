@@ -4,7 +4,6 @@ spring:
       database: network-controller_test_db
       # Using the same connection settings as production, just a different database name
 
-  # Ensure virtual threads are enabled in tests too
   threads:
     virtual:
       enabled: true

@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 
+//TODO delete me
 public class MacAddressTest {
 
     private static final Log log = LogFactory.getLog(MacAddressTest.class);

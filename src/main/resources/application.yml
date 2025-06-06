@@ -21,6 +21,6 @@ spring:
 
 logging:
   level:
-    com.example.network_controller: DEBUG
+    com.alesmontaldo.network_controller: DEBUG
     org.springframework.graphql: DEBUG
     org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer: TRACE

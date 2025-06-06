@@ -1,9 +1,7 @@
 package com.alesmontaldo.network_controller.domain.device.persistance;
 
 import com.alesmontaldo.network_controller.codegen.types.DeviceType;
-import com.alesmontaldo.network_controller.domain.comment.persistence.CommentDocument;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;

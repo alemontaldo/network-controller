@@ -13,13 +13,11 @@ import java.util.Arrays;
 
 @Configuration
 @EnableMongoRepositories(basePackages = {
-        "com.alesmontaldo.network_controller.domain.club.persistence",
-        "com.alesmontaldo.network_controller.domain.athlete.persistence",
-        "com.alesmontaldo.network_controller.domain.activity.persistence",
         "com.alesmontaldo.network_controller.domain.device.persistance"
 })
 public class MongoConfig {
 
+    //TODO consider remove
     @Bean
     public ValidatingMongoEventListener validatingMongoEventListener(LocalValidatorFactoryBean factory) {
         return new ValidatingMongoEventListener(factory);

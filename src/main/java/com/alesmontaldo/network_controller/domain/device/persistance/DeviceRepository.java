@@ -1,8 +1,6 @@
 package com.alesmontaldo.network_controller.domain.device.persistance;
 
 import com.alesmontaldo.network_controller.codegen.types.Device;
-import com.alesmontaldo.network_controller.domain.club.Club;
-import com.alesmontaldo.network_controller.domain.club.persistence.ClubDocument;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import java.util.ArrayList;
 import java.util.List;

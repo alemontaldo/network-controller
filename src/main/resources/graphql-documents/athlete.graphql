@@ -1,8 +1,0 @@
-# TODO: what is this file for?
-query GetAthlete($id: ID) {
-    athlete(id: $id) {
-        id
-        firstName
-        lastName
-    }
-}
