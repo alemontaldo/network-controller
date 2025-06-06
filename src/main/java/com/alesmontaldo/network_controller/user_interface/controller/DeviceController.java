@@ -30,6 +30,11 @@ public class DeviceController {
         return deviceService.getDeviceByMac(mac);
     }
 
+    @QueryMapping
+    public Device subtree(@Argument MacAddress mac) {
+        return deviceService.getSubtree(mac);
+    }
+
     @MutationMapping
     public Device addDevice(@Argument("input") Map<String, Object> input) {
         MacAddress mac = (MacAddress) input.get("mac");

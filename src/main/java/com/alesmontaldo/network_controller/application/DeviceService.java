@@ -43,6 +43,10 @@ public class DeviceService {
         return deviceRepository.save(newDevice);
     }
 
+    public Device getSubtree(MacAddress rootMac) {
+        return deviceRepository.fetchSubtree(rootMac).orElse(null);
+    }
+
     //Extra feature
     public void deleteDevice(MacAddress mac) {
         logger.info("Deleting device with mac: " + mac);
