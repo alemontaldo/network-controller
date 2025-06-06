@@ -10,6 +10,7 @@ import com.alesmontaldo.network_controller.domain.activity.Activity;
 import com.alesmontaldo.network_controller.domain.athlete.Athlete;
 import com.alesmontaldo.network_controller.domain.club.Club;
 import com.alesmontaldo.network_controller.domain.comment.Comment;
+import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import java.util.List;
 import java.util.Map;
 import org.springframework.graphql.data.method.annotation.*;
@@ -25,14 +26,14 @@ public class DeviceController {
     }
 
     @QueryMapping
-    public Device deviceByMac(@Argument String mac) {
+    public Device deviceByMac(@Argument MacAddress mac) {
         return deviceService.getDeviceByMac(mac);
     }
 
     @MutationMapping
     public Device addDevice(@Argument("input") Map<String, Object> input) {
-        String mac = (String) input.get("mac");
-        String uplinkMac = (String) input.get("uplinkMac");
+        MacAddress mac = (MacAddress) input.get("mac");
+        MacAddress uplinkMac = (MacAddress) input.get("uplinkMac");
         DeviceType deviceType = DeviceType.valueOf((String) input.get("deviceType"));
 
         return deviceService.addDevice(mac, uplinkMac, deviceType);
@@ -40,19 +41,9 @@ public class DeviceController {
 
     //Extra feature
     @MutationMapping
-    public DeleteDeviceResponse deleteDevice(@Argument("mac") String mac) {
+    public DeleteDeviceResponse deleteDevice(@Argument("mac") MacAddress mac) {
         deviceService.deleteDevice(mac);
         // only happy path here
         return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
     }
-
-//    @SchemaMapping
-//    public List<Activity> activities(Athlete athlete) {
-//        return athleteService.getActivitiesForAthlete(athlete);
-//    }
-//
-//    @BatchMapping
-//    public Map<Activity, List<Comment>> comments(List<Activity> activities) {
-//        return activityService.getCommentsForActivities(activities);
-//    }
 }

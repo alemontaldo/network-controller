@@ -1,6 +1,7 @@
 package com.alesmontaldo.network_controller.domain.device.persistance;
 
 import com.alesmontaldo.network_controller.codegen.types.*;
+import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class DeviceRepositoryTest {
 
         // Create and save a test device
         testGateway = new GatewayDocument();
-        testGateway.setMac("AA:BB:CC:DD:EE:FF");
+        testGateway.setMac(new MacAddress("AA:BB:CC:DD:EE:FF"));
         testGateway.setUplinkMac(null);
         testGateway.setDeviceType(DeviceType.GATEWAY);
         
@@ -53,13 +54,13 @@ public class DeviceRepositoryTest {
         assertThat(result).isPresent();
         assertThat(result.get()).isInstanceOf(Gateway.class);
         Gateway gateway = (Gateway) result.get();
-        assertThat(gateway.getMac()).isEqualTo("AA:BB:CC:DD:EE:FF");
+        assertThat(gateway.getMac()).isEqualTo(new MacAddress("AA:BB:CC:DD:EE:FF"));
     }
 
     @Test
     void getDeviceById_shouldReturnEmpty_whenDeviceDoesNotExist() {
         // Act
-        Optional<Device> result = deviceRepository.findById("non-existent-mac");
+        Optional<Device> result = deviceRepository.findById(new MacAddress("11:BB:CC:DD:EE:FF")); //non existent mac
 
         // Assert
         assertThat(result).isEmpty();
@@ -69,13 +70,13 @@ public class DeviceRepositoryTest {
     void getDeviceById_shouldReturnCorrectDeviceType() {
         // Arrange
         SwitchDocument switchDevice = new SwitchDocument();
-        switchDevice.setMac("11:22:33:44:55:66");
+        switchDevice.setMac(new MacAddress("11:22:33:44:55:66"));
         switchDevice.setUplinkMac(testGateway.getMac());
         switchDevice.setDeviceType(DeviceType.SWITCH);
         switchDevice = deviceMongoRepository.save(switchDevice);
 
         AccessPointDocument accessPoint = new AccessPointDocument();
-        accessPoint.setMac("AA:BB:CC:11:22:33");
+        accessPoint.setMac(new MacAddress("AA:BB:CC:11:22:33"));
         accessPoint.setUplinkMac(switchDevice.getMac());
         accessPoint.setDeviceType(DeviceType.ACCESS_POINT);
         accessPoint = deviceMongoRepository.save(accessPoint);

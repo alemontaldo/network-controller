@@ -2,6 +2,7 @@ package com.alesmontaldo.network_controller.domain.device.persistance;
 
 import com.alesmontaldo.network_controller.codegen.types.DeviceType;
 import com.alesmontaldo.network_controller.domain.comment.persistence.CommentDocument;
+import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
@@ -11,8 +12,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public abstract class DeviceDocument {
 
     @Id
-    protected String mac;          // e.g. "AA:BB:CC:DD:EE:FF"
-    protected String uplinkMac;    // parent’s MAC, null if root
+    protected MacAddress mac;          // e.g. "AA:BB:CC:DD:EE:FF"
+    protected MacAddress uplinkMac;    // parent’s MAC, null if root
     protected DeviceType deviceType;
 
     // This field is purely for receiving the aggregation result.
@@ -22,27 +23,27 @@ public abstract class DeviceDocument {
     public DeviceDocument() {
     }
 
-    public DeviceDocument(String mac,
-                          String uplinkMac,
+    public DeviceDocument(MacAddress mac,
+                          MacAddress uplinkMac,
                           DeviceType deviceType) {
         this.mac = mac;
         this.uplinkMac = uplinkMac;
         this.deviceType = deviceType;
     }
 
-    public String getMac() {
+    public MacAddress getMac() {
         return mac;
     }
 
-    public void setMac(String mac) {
+    public void setMac(MacAddress mac) {
         this.mac = mac;
     }
 
-    public String getUplinkMac() {
+    public MacAddress getUplinkMac() {
         return uplinkMac;
     }
 
-    public void setUplinkMac(String uplinkMac) {
+    public void setUplinkMac(MacAddress uplinkMac) {
         this.uplinkMac = uplinkMac;
     }
 

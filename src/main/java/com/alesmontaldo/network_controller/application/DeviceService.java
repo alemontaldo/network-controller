@@ -6,6 +6,7 @@ import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.activity.Activity;
 import com.alesmontaldo.network_controller.domain.athlete.Athlete;
 import com.alesmontaldo.network_controller.domain.club.Club;
+import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +26,12 @@ public class DeviceService {
         this.deviceRepository = deviceRepository;
     }
 
-    public Device getDeviceByMac(String mac) {
+    public Device getDeviceByMac(MacAddress mac) {
         logger.info("Fetching device with mac: " + mac);
         return deviceRepository.findById(mac).orElse(null);
     }
 
-    public Device addDevice(String mac, String uplinkMac, DeviceType deviceType) {
+    public Device addDevice(MacAddress mac, MacAddress uplinkMac, DeviceType deviceType) {
         logger.info("Creating new device with mac:" + mac + ", uplinkMac: " + uplinkMac + " and deviceType: " + deviceType);
 
         Device newDevice = switch (deviceType) {
@@ -43,7 +44,7 @@ public class DeviceService {
     }
 
     //Extra feature
-    public void deleteDevice(String mac) {
+    public void deleteDevice(MacAddress mac) {
         logger.info("Deleting device with mac: " + mac);
         deviceRepository.deleteById(mac);
     }
