@@ -4,7 +4,9 @@ import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.domain.club.Club;
 import com.alesmontaldo.network_controller.domain.club.persistence.ClubDocument;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -52,7 +54,7 @@ public class DeviceRepository {
         MatchOperation match = Aggregation.match(Criteria.where("_id").is(rootMac));
 
         // 2) $graphLookup stage: from "devices" collection,
-        //    startWith “$mac” (the matched root’s MAC),
+        //    startWith "$mac" (the matched root's MAC),
         //    connectFromField = "mac", connectToField = "uplinkMac",
         //    as = "subtree"
         GraphLookupOperation graphLookup = GraphLookupOperation.builder()
@@ -73,7 +75,38 @@ public class DeviceRepository {
         if (results.getMappedResults().isEmpty()) {
             return Optional.empty();
         } else {
-            return Optional.of(results.getMappedResults().getFirst()).map(deviceMapper::toDevice);
+            DeviceDocument rootDevice = results.getMappedResults().getFirst();
+            
+            // Process the device tree to build the full hierarchy
+            buildDeviceHierarchy(rootDevice);
+            
+            return Optional.of(deviceMapper.toDevice(rootDevice));
+        }
+    }
+    
+    /**
+     * Recursively builds the device hierarchy by organizing the flat list of downlink devices
+     * into a proper tree structure.
+     */
+    private void buildDeviceHierarchy(DeviceDocument device) {
+        if (device.getDownlinkDevices() == null || device.getDownlinkDevices().isEmpty()) {
+            // No children, set empty list
+            device.setDownlinkDevices(List.of());
+            return;
+        }
+        
+        // Get all direct children of this device
+        List<DeviceDocument> directChildren = device.getDownlinkDevices().stream()
+                .filter(child -> child.getUplinkMac() != null && 
+                       child.getUplinkMac().equals(device.getMac()))
+                .collect(Collectors.toList());
+        
+        // Set the direct children as the downlink devices
+        device.setDownlinkDevices(directChildren);
+        
+        // Recursively process each child
+        for (DeviceDocument child : directChildren) {
+            buildDeviceHierarchy(child);
         }
     }
 
