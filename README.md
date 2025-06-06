@@ -8,7 +8,7 @@ at: http://localhost:8080/graphiql?path=/graphql
 
 ```graphql
 {
-  deviceByMac(mac: "here_a_mac") {
+  deviceByMac(mac: "AA:BB:CC:DD:EE:FF") {
     mac
     uplinkMac
     downlinkDevices {
@@ -20,7 +20,7 @@ at: http://localhost:8080/graphiql?path=/graphql
 
 ```graphql
 mutation {
-    addDevice(input: {mac: "here_another_mac", deviceType: ACCESS_POINT}) {
+    addDevice(input: {mac: "AA:BB:CC:DD:EE:FF", deviceType: ACCESS_POINT}) {
         mac
         uplinkMac
     }
@@ -29,7 +29,7 @@ mutation {
 
 ```graphql
 mutation {
-    deleteDevice(mac: "here_another_mac") {
+    deleteDevice(mac: "AA:BB:CC:DD:EE:FF") {
         success
         message
         deletedMac

@@ -13,14 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 )
 public abstract class DeviceMapper {
 
-    //TODO keep me?
-    private DeviceMongoRepository deviceMongoRepository;
-
-    @Autowired
-    public void setActivityMongoMapper(DeviceMongoRepository deviceMongoRepository) {
-        this.deviceMongoRepository = deviceMongoRepository;
-    }
-
     /**
      * Maps a DeviceDocument (mongo type) to a Device (domain type)
      * This is a dispatcher method that will call the appropriate method based on the type
