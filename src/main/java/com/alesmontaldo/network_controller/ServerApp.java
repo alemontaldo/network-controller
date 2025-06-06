@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class ServerApp {
 
-	private static final Log logger = LogFactory.getLog(ServerApp.class);
+	private static final Log log = LogFactory.getLog(ServerApp.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(ServerApp.class, args);
@@ -22,7 +22,7 @@ public class ServerApp {
 //	GraphQlSourceBuilderCustomizer graphQlSourceBuilderCustomizer() {
 //		return builder -> builder.inspectSchemaMappings(
 //				initializer -> initializer.classMapping("Club", Club.class),
-//				logger::debug);
+//				log::debug);
 //	}
 
 }

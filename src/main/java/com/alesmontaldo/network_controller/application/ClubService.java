@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 public class ClubService {
 
-    private static final Log logger = LogFactory.getLog(ClubService.class);
+    private static final Log log = LogFactory.getLog(ClubService.class);
     private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final ClubRepository clubRepository;
@@ -24,7 +24,7 @@ public class ClubService {
     }
 
     public Club createClub(String name, int totalMembers) {
-        logger.info("Creating new club: " + name + " with " + totalMembers + " members");
+        log.info("Creating new club: " + name + " with " + totalMembers + " members");
         Club club = new Club(null, name, totalMembers);
         return clubRepository.save(club);
     }

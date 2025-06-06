@@ -110,9 +110,11 @@ public class DeviceRepository {
         
         // Recursively process each child, passing the complete list of descendants
         for (DeviceDocument child : directChildren) {
-            // For each child, we need to find its descendants from the original flat list
+            // For each child, we need to build its own device hierarchy
+
+            // we remove the child itself from the copy of the flat list of all descendants
             List<DeviceDocument> childDescendants = allDescendants.stream()
-                    .filter(descendant -> !descendant.getMac().equals(child.getMac())) // Exclude the child itself
+                    .filter(descendant -> !descendant.getMac().equals(child.getMac()))
                     .collect(Collectors.toList());
             
             // Set the potential descendants to the child

@@ -1,3 +1,7 @@
+# Notes
+
+This implementation enforces a strict acyclic topology. Devices cannot uplink to their descendants or create cycles in the network structure.
+
 # Overview
 
 with this db (cd /Users/alessandro.montaldo/Projects/ales/java/graphql/localstack && docker compose up -d)

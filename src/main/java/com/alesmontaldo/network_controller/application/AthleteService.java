@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class AthleteService {
 
-    private static final Log logger = LogFactory.getLog(AthleteService.class);
+    private static final Log log = LogFactory.getLog(AthleteService.class);
 
     private final AthleteRepository athleteRepository;
 
@@ -23,12 +23,12 @@ public class AthleteService {
     }
 
     public Athlete getAthleteById(String id) {
-        logger.info("Fetching athlete with ID: " + id);
+        log.info("Fetching athlete with ID: " + id);
         return athleteRepository.findById(id).orElse(null);
     }
 
     public List<Activity> getActivitiesForAthlete(Athlete athlete) {
-        logger.info("Fetching activities for athlete: " + athlete);
+        log.info("Fetching activities for athlete: " + athlete);
         Optional<Athlete> athleteDoc = athleteRepository.findById(athlete.id());
         if (athleteDoc.isPresent()) {
             return athleteDoc.get().activities();

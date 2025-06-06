@@ -8,8 +8,10 @@ import com.alesmontaldo.network_controller.domain.athlete.Athlete;
 import com.alesmontaldo.network_controller.domain.club.Club;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
+import jakarta.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeviceService {
 
-    private static final Log logger = LogFactory.getLog(DeviceService.class);
+    private static final Log log = LogFactory.getLog(DeviceService.class);
 
     private final DeviceRepository deviceRepository;
 
@@ -27,12 +29,17 @@ public class DeviceService {
     }
 
     public Device getDeviceByMac(MacAddress mac) {
-        logger.info("Fetching device with mac: " + mac);
+        log.info("Fetching device with mac: " + mac);
         return deviceRepository.findById(mac).orElse(null);
     }
 
     public Device addDevice(MacAddress mac, MacAddress uplinkMac, DeviceType deviceType) {
-        logger.info("Creating new device with mac:" + mac + ", uplinkMac: " + uplinkMac + " and deviceType: " + deviceType);
+        log.info("Trying to add new device with mac:" + mac + ", uplinkMac: " + uplinkMac + " and deviceType: " + deviceType);
+
+        if (Objects.equals(mac, uplinkMac)) {
+            // this would open the door to circular connections and it's quite important
+            throw new ValidationException("Device MAC cannot be the same as its uplink MAC");
+        }
 
         Device newDevice = switch (deviceType) {
             case GATEWAY -> new Gateway(mac, uplinkMac, GATEWAY, new ArrayList<>());
@@ -49,7 +56,7 @@ public class DeviceService {
 
     //Extra feature
     public void deleteDevice(MacAddress mac) {
-        logger.info("Deleting device with mac: " + mac);
+        log.info("Deleting device with mac: " + mac);
         deviceRepository.deleteById(mac);
     }
 }

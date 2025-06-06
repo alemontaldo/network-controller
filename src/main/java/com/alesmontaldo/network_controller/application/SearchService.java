@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class SearchService {
 
-    private static final Log logger = LogFactory.getLog(SearchService.class);
+    private static final Log log = LogFactory.getLog(SearchService.class);
 
     private final ClubRepository clubRepository;
     private final AthleteRepository athleteRepository;
@@ -27,7 +27,7 @@ public class SearchService {
     }
 
     public List<Object> searchByText(String text) {
-        logger.info("Searching for: " + text);
+        log.info("Searching for: " + text);
 
         // Find clubs
         List<Object> results = new ArrayList<>(clubRepository.findByNameContainingIgnoreCase(text));

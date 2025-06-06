@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ActivityService {
-    private static final Log logger = LogFactory.getLog(ActivityService.class);
+    private static final Log log = LogFactory.getLog(ActivityService.class);
 
     private final ActivityRepository activityRepository;
 
@@ -22,7 +22,7 @@ public class ActivityService {
     }
 
     public Map<Activity, List<Comment>> getCommentsForActivities(List<Activity> activities) {
-        logger.info("Fetching comments for activities: " + activities);
+        log.info("Fetching comments for activities: " + activities);
         return activities.stream().collect(Collectors.toMap(
                 Function.identity(),
                 activity -> activityRepository.findCommentsByActivityId(activity.id())

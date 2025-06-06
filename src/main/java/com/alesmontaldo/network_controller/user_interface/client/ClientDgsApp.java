@@ -26,7 +26,7 @@ import org.springframework.web.client.RestClient;
 @Import(RestClientAutoConfiguration.class)
 public class ClientDgsApp implements ApplicationRunner {
 
-	private static final Log logger = LogFactory.getLog(ClientDgsApp.class);
+	private static final Log log = LogFactory.getLog(ClientDgsApp.class);
 
 
 	private final DgsGraphQlClient dgsGraphQlClient;
@@ -47,15 +47,15 @@ public class ClientDgsApp implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 
-		logger.debug("Sync retrieve");
+		log.debug("Sync retrieve");
 		Athlete athlete = requestFor("10").retrieveSync("athlete").toEntity(Athlete.class);
-		logger.debug(athlete);
+		log.debug(athlete);
 
-		logger.debug("Async retrieve");
+		log.debug("Async retrieve");
 		Mono<Athlete> mono1 = requestFor("24").retrieve("athlete").toEntity(Athlete.class);
 		Mono<Athlete> mono2 = requestFor("66").retrieve("athlete").toEntity(Athlete.class);
 		Mono<Athlete> mono3 = requestFor("70").retrieve("athlete").toEntity(Athlete.class);
-		Mono.zip(mono1, mono2, mono3).doOnNext(logger::debug).block();
+		Mono.zip(mono1, mono2, mono3).doOnNext(log::debug).block();
 	}
 
 	private DgsGraphQlClient.RequestSpec requestFor(String id) {

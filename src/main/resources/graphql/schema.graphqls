@@ -20,6 +20,9 @@ type Mutation {
     createClub(input: ClubInput!): Club!
 }
 
+# TODO avoid circular connections
+# TODO validation like mac != uplinkMac
+
 # --------------------------------------------------
 
 enum DeviceType {

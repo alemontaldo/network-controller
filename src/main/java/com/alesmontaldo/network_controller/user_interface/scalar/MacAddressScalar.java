@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class MacAddressScalar {
 
-    private static final Log logger = LogFactory.getLog(MacAddressScalar.class);
+    private static final Log log = LogFactory.getLog(MacAddressScalar.class);
 
     public static final GraphQLScalarType MAC_ADDRESS = GraphQLScalarType.newScalar()
             .name("MacAddress")
@@ -41,7 +41,7 @@ public class MacAddressScalar {
         try {
             return new MacAddress(serializedMacAddress).toString();
         } catch (Exception e) {
-            logger.error("Error while serializing a mac address with exception: ", e);
+            log.error("Error while serializing a mac address with exception: ", e);
             throw new CoercingSerializeException("Unable to serialize " + serializedMacAddress + " as a mac address");
         }
     }
@@ -55,7 +55,7 @@ public class MacAddressScalar {
         try {
             return new MacAddress(serializedMacAddress);
         } catch (Exception e) {
-            logger.error("Error while deserializing a mac address with exception: ", e);
+            log.error("Error while deserializing a mac address with exception: ", e);
             throw new CoercingParseValueException("Unable to deserializing " + serializedMacAddress + " as a mac address");
         }
     }
@@ -69,7 +69,7 @@ public class MacAddressScalar {
         try {
             return new MacAddress(serializedMacAddress);
         } catch (Exception e) {
-            logger.error("Error while deserializing a mac address with exception: ", e);
+            log.error("Error while deserializing a mac address with exception: ", e);
             throw new CoercingParseLiteralException("Value is not a mac address : '" + input + "'");
         }
     }

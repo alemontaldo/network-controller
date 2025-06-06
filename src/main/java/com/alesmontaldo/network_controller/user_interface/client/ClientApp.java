@@ -23,7 +23,7 @@ import org.springframework.web.client.RestClient;
 @Import(RestClientAutoConfiguration.class)
 public class ClientApp implements ApplicationRunner {
 
-	private static final Log logger = LogFactory.getLog(ClientApp.class);
+	private static final Log log = LogFactory.getLog(ClientApp.class);
 
 
 	private final HttpSyncGraphQlClient client;
@@ -44,15 +44,15 @@ public class ClientApp implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		String document = "athlete";
 
-		logger.debug("Sync retrieve");
+		log.debug("Sync retrieve");
 		Athlete athlete = requestFor(document, 10L).retrieveSync(document).toEntity(Athlete.class);
-		logger.debug(athlete);
+		log.debug(athlete);
 
-		logger.debug("Async retrieve");
+		log.debug("Async retrieve");
 		Mono<Athlete> mono1 = requestFor(document, 24L).retrieve(document).toEntity(Athlete.class);
 		Mono<Athlete> mono2 = requestFor(document, 66L).retrieve(document).toEntity(Athlete.class);
 		Mono<Athlete> mono3 = requestFor(document, 70L).retrieve(document).toEntity(Athlete.class);
-		Mono.zip(mono1, mono2, mono3).doOnNext(logger::debug).block();
+		Mono.zip(mono1, mono2, mono3).doOnNext(log::debug).block();
 	}
 
 	private GraphQlClient.RequestSpec requestFor(String document, long id) {
