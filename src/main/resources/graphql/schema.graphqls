@@ -11,6 +11,9 @@ type Query {
 
 type Mutation {
     addDevice(input: DeviceInput!): Device!
+    # extra features
+    deleteDevice(mac: ID!): DeleteDeviceResponse!
+
     createClub(input: ClubInput!): Club!
 }
 
@@ -124,6 +127,12 @@ input DeviceInput {
     mac: ID!
     uplinkMac: ID
     deviceType: DeviceType!
+}
+
+type DeleteDeviceResponse {
+    success: Boolean!
+    message: String
+    deletedMac: ID
 }
 
 #-----------------------

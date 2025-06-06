@@ -3,6 +3,7 @@ package com.alesmontaldo.network_controller.user_interface.controller;
 import com.alesmontaldo.network_controller.application.ActivityService;
 import com.alesmontaldo.network_controller.application.AthleteService;
 import com.alesmontaldo.network_controller.application.DeviceService;
+import com.alesmontaldo.network_controller.codegen.types.DeleteDeviceResponse;
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.codegen.types.DeviceType;
 import com.alesmontaldo.network_controller.domain.activity.Activity;
@@ -35,6 +36,14 @@ public class DeviceController {
         DeviceType deviceType = DeviceType.valueOf((String) input.get("deviceType"));
 
         return deviceService.addDevice(mac, uplinkMac, deviceType);
+    }
+
+    //Extra feature
+    @MutationMapping
+    public DeleteDeviceResponse deleteDevice(@Argument("mac") String mac) {
+        deviceService.deleteDevice(mac);
+        // only happy path here
+        return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
     }
 
 //    @SchemaMapping

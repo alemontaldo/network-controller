@@ -29,4 +29,9 @@ public class DeviceRepository {
         DeviceDocument clubDocument = deviceMongoRepository.save(deviceMapper.toDocument(club));
         return deviceMapper.toDevice(clubDocument);
     }
+
+    //Extra feature
+    public void deleteById(String id) {
+        deviceMongoRepository.deleteById(id);
+    }
 }

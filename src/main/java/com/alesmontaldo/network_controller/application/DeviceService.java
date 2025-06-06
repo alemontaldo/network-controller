@@ -41,4 +41,10 @@ public class DeviceService {
 
         return deviceRepository.save(newDevice);
     }
+
+    //Extra feature
+    public void deleteDevice(String mac) {
+        logger.info("Deleting device with mac: " + mac);
+        deviceRepository.deleteById(mac);
+    }
 }

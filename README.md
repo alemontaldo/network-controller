@@ -6,24 +6,36 @@ db browser at: http://localhost:8081/
 
 at: http://localhost:8080/graphiql?path=/graphql
 
-	query { deviceByMac(mac:"here_a_mac") {
-			mac,
-			uplinkMac,
-      downlinkDevices {
-        mac
-      }
-		}}
-
-
-    mutation CreateNewClub {
-      addDevice(input: {
-        mac: "here_a_mac",
-        deviceType: ACCESS_POINT
-      }) {
-        mac,
-        uplinkMac
-      }
+```graphql
+{
+  deviceByMac(mac: "here_a_mac") {
+    mac
+    uplinkMac
+    downlinkDevices {
+      mac
     }
+  }
+}
+```
+
+```graphql
+mutation {
+    addDevice(input: {mac: "here_another_mac", deviceType: ACCESS_POINT}) {
+        mac
+        uplinkMac
+    }
+}
+```
+
+```graphql
+mutation {
+    deleteDevice(mac: "here_another_mac") {
+        success
+        message
+        deletedMac
+    }
+}
+```
 
 ## Build
 
