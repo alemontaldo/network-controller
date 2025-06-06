@@ -1,5 +1,30 @@
 # Overview
 
+with this db (cd /Users/alessandro.montaldo/Projects/ales/java/graphql/localstack && docker compose up -d)
+
+db browser at: http://localhost:8081/
+
+at: http://localhost:8080/graphiql?path=/graphql
+
+	query { deviceByMac(mac:"here_a_mac") {
+			mac,
+			uplinkMac,
+      downlinkDevices {
+        mac
+      }
+		}}
+
+
+    mutation CreateNewClub {
+      addDevice(input: {
+        mac: "here_a_mac",
+        deviceType: ACCESS_POINT
+      }) {
+        mac,
+        uplinkMac
+      }
+    }
+
 ## Build
 
 on mac:

@@ -16,27 +16,37 @@ type Mutation {
 
 # --------------------------------------------------
 
+enum DeviceType {
+    GATEWAY
+    SWITCH
+    ACCESS_POINT
+}
+
 interface Device {
     mac: ID!
     uplinkMac: ID
+    deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Gateway implements Device {
     mac: ID!
     uplinkMac: ID
+    deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Switch implements Device {
     mac: ID!
     uplinkMac: ID
+    deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type AccessPoint implements Device {
     mac: ID!
     uplinkMac: ID
+    deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
@@ -114,12 +124,6 @@ input DeviceInput {
     mac: ID!
     uplinkMac: ID
     deviceType: DeviceType!
-}
-
-enum DeviceType {
-    GATEWAY
-    SWITCH
-    ACCESS_POINT
 }
 
 #-----------------------

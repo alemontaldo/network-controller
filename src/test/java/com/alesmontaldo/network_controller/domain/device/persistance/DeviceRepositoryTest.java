@@ -50,7 +50,7 @@ public class DeviceRepositoryTest {
     @Test
     void getDeviceById_shouldReturnDevice_whenDeviceExists() {
         // Act
-        Optional<Device> result = deviceRepository.getDeviceById(testGateway.getMac());
+        Optional<Device> result = deviceRepository.findById(testGateway.getMac());
 
         // Assert
         assertThat(result).isPresent();
@@ -62,7 +62,7 @@ public class DeviceRepositoryTest {
     @Test
     void getDeviceById_shouldReturnEmpty_whenDeviceDoesNotExist() {
         // Act
-        Optional<Device> result = deviceRepository.getDeviceById("non-existent-mac");
+        Optional<Device> result = deviceRepository.findById("non-existent-mac");
 
         // Assert
         assertThat(result).isEmpty();
@@ -84,9 +84,9 @@ public class DeviceRepositoryTest {
         accessPoint = deviceMongoRepository.save(accessPoint);
 
         // Act
-        Optional<Device> gatewayResult = deviceRepository.getDeviceById(testGateway.getMac());
-        Optional<Device> switchResult = deviceRepository.getDeviceById(switchDevice.getMac());
-        Optional<Device> apResult = deviceRepository.getDeviceById(accessPoint.getMac());
+        Optional<Device> gatewayResult = deviceRepository.findById(testGateway.getMac());
+        Optional<Device> switchResult = deviceRepository.findById(switchDevice.getMac());
+        Optional<Device> apResult = deviceRepository.findById(accessPoint.getMac());
 
         // Assert
         assertThat(gatewayResult).isPresent();

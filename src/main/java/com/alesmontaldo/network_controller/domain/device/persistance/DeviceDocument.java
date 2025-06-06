@@ -1,5 +1,6 @@
 package com.alesmontaldo.network_controller.domain.device.persistance;
 
+import com.alesmontaldo.network_controller.codegen.types.DeviceType;
 import com.alesmontaldo.network_controller.domain.comment.persistence.CommentDocument;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public abstract class DeviceDocument {
     @Id
     protected String mac;          // e.g. "AA:BB:CC:DD:EE:FF"
     protected String uplinkMac;    // parent’s MAC, null if root
-    protected String deviceType;
+    protected DeviceType deviceType;
 
     // This field is purely for receiving the aggregation result.
     // It will hold “all descendants” (including the root itself).
@@ -23,7 +24,7 @@ public abstract class DeviceDocument {
 
     public DeviceDocument(String mac,
                           String uplinkMac,
-                          String deviceType) {
+                          DeviceType deviceType) {
         this.mac = mac;
         this.uplinkMac = uplinkMac;
         this.deviceType = deviceType;
@@ -53,11 +54,11 @@ public abstract class DeviceDocument {
         this.downlinkDevices = downlinkDevices;
     }
     
-    public String getDeviceType() {
+    public DeviceType getDeviceType() {
         return deviceType;
     }
     
-    public void setDeviceType(String deviceType) {
+    public void setDeviceType(DeviceType deviceType) {
         this.deviceType = deviceType;
     }
 }

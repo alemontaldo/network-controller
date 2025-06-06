@@ -31,10 +31,9 @@ public abstract class DeviceMapper {
         }
         
         return switch (document.getDeviceType()) {
-            case "GATEWAY" -> toGateway((GatewayDocument) document);
-            case "SWITCH" -> toSwitch((SwitchDocument) document);
-            case "ACCESS_POINT" -> toAccessPoint((AccessPointDocument) document);
-            default -> throw new IllegalArgumentException("Unknown device type: " + document.getDeviceType());
+            case GATEWAY -> toGateway((GatewayDocument) document);
+            case SWITCH -> toSwitch((SwitchDocument) document);
+            case ACCESS_POINT -> toAccessPoint((AccessPointDocument) document);
         };
     }
 
@@ -59,27 +58,9 @@ public abstract class DeviceMapper {
 
     public abstract AccessPoint toAccessPoint(AccessPointDocument document);
     
-    @Mapping(target = "deviceType", ignore = true)
     public abstract GatewayDocument toGatewayDocument(Gateway gateway);
     
-    @Mapping(target = "deviceType", ignore = true)
     public abstract SwitchDocument toSwitchDocument(Switch switchDevice);
     
-    @Mapping(target = "deviceType", ignore = true)
     public abstract AccessPointDocument toAccessPointDocument(AccessPoint accessPoint);
-
-    @AfterMapping
-    protected void setGatewayDocumentDeviceType(@MappingTarget GatewayDocument document) {
-        document.setDeviceType("GATEWAY");
-    }
-    
-    @AfterMapping
-    protected void setSwitchDocumentDeviceType(@MappingTarget SwitchDocument document) {
-        document.setDeviceType("SWITCH");
-    }
-    
-    @AfterMapping
-    protected void setAccessPointDocumentDeviceType(@MappingTarget AccessPointDocument document) {
-        document.setDeviceType("ACCESS_POINT");
-    }
 }
