@@ -6,6 +6,7 @@ import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "devices")
@@ -15,6 +16,9 @@ public abstract class DeviceDocument {
     protected MacAddress mac;          // e.g. "AA:BB:CC:DD:EE:FF"
     protected MacAddress uplinkMac;    // parent’s MAC, null if root
     protected DeviceType deviceType;
+
+    @Version
+    private Long version;
 
     // This field is purely for receiving the aggregation result.
     // It will hold “all descendants” (including the root itself).
