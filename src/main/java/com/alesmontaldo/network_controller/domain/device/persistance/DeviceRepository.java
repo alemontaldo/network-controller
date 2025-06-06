@@ -4,6 +4,7 @@ import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.domain.club.Club;
 import com.alesmontaldo.network_controller.domain.club.persistence.ClubDocument;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,8 +96,11 @@ public class DeviceRepository {
             return;
         }
         
+        // Create a copy of the flat list of all descendants
+        List<DeviceDocument> allDescendants = new ArrayList<>(device.getDownlinkDevices());
+        
         // Get all direct children of this device
-        List<DeviceDocument> directChildren = device.getDownlinkDevices().stream()
+        List<DeviceDocument> directChildren = allDescendants.stream()
                 .filter(child -> child.getUplinkMac() != null && 
                        child.getUplinkMac().equals(device.getMac()))
                 .collect(Collectors.toList());
@@ -104,8 +108,17 @@ public class DeviceRepository {
         // Set the direct children as the downlink devices
         device.setDownlinkDevices(directChildren);
         
-        // Recursively process each child
+        // Recursively process each child, passing the complete list of descendants
         for (DeviceDocument child : directChildren) {
+            // For each child, we need to find its descendants from the original flat list
+            List<DeviceDocument> childDescendants = allDescendants.stream()
+                    .filter(descendant -> !descendant.getMac().equals(child.getMac())) // Exclude the child itself
+                    .collect(Collectors.toList());
+            
+            // Set the potential descendants to the child
+            child.setDownlinkDevices(childDescendants);
+            
+            // Recursively build the hierarchy for this child
             buildDeviceHierarchy(child);
         }
     }

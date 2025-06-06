@@ -37,6 +37,33 @@ mutation {
 }
 ```
 
+```graphql
+query GetSubtree($mac: MacAddress!) {
+  subtree(mac: $mac) {
+    mac
+    uplinkMac
+    deviceType
+    downlinkDevices {
+      mac
+      uplinkMac
+      deviceType
+      downlinkDevices {
+        mac
+        uplinkMac
+        deviceType
+      }
+    }
+  }
+}
+```
+
+# with
+```json
+{
+  "mac": "BB:BB:CC:DD:EE:FF"
+}
+```
+
 ## Build
 
 on mac:
