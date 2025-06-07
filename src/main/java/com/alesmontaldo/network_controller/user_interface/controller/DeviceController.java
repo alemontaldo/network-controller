@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private static final int MAX_RETRIES = 3;
+    private static final int RETRY_DELAY_MS = 500;
 
     public DeviceController(DeviceService deviceService) {
         this.deviceService = deviceService;
@@ -34,14 +36,50 @@ public class DeviceController {
         MacAddress uplinkMac = (MacAddress) input.get("uplinkMac");
         DeviceType deviceType = DeviceType.valueOf((String) input.get("deviceType"));
 
-        return deviceService.addDevice(mac, uplinkMac, deviceType);
+        int attempts = 0;
+        while (attempts < MAX_RETRIES) {
+            try {
+                return deviceService.addDevice(mac, uplinkMac, deviceType);
+            } catch (ConcurrentModificationException e) {
+                attempts++;
+                if (attempts >= MAX_RETRIES) {
+                    throw e;
+                }
+                
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Operation interrupted", ie);
+                }
+            }
+        }
+        throw new RuntimeException("Failed to add device after " + MAX_RETRIES + " attempts");
     }
 
     //Extra feature
     @MutationMapping
     public DeleteDeviceResponse deleteDevice(@Argument("mac") MacAddress mac) {
-        deviceService.deleteDevice(mac);
-        // only happy path here
-        return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
+        int attempts = 0;
+        while (attempts < MAX_RETRIES) {
+            try {
+                deviceService.deleteDevice(mac);
+                // only happy path here
+                return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
+            } catch (ConcurrentModificationException e) {
+                attempts++;
+                if (attempts >= MAX_RETRIES) {
+                    return new DeleteDeviceResponse(false, "Failed to delete device: " + e.getMessage(), mac);
+                }
+                
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Operation interrupted", ie);
+                }
+            }
+        }
+        return new DeleteDeviceResponse(false, "Failed to delete device after " + MAX_RETRIES + " attempts", mac);
     }
 }

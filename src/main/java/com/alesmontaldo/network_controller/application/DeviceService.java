@@ -5,10 +5,12 @@ import static com.alesmontaldo.network_controller.codegen.types.DeviceType.*;
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
+import com.alesmontaldo.network_controller.infrastructure.lock.DistributedLockService;
 import jakarta.validation.ValidationException;
 import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,12 @@ public class DeviceService {
     private static final Log log = LogFactory.getLog(DeviceService.class);
 
     private final DeviceRepository deviceRepository;
+    private final DistributedLockService lockService;
 
-    public DeviceService(DeviceRepository deviceRepository) {
+    @Autowired
+    public DeviceService(DeviceRepository deviceRepository, DistributedLockService lockService) {
         this.deviceRepository = deviceRepository;
+        this.lockService = lockService;
     }
 
     public Device getDeviceByMac(MacAddress mac) {
@@ -33,36 +38,43 @@ public class DeviceService {
     public Device addDevice(MacAddress mac, MacAddress uplinkMac, DeviceType deviceType) {
         log.info("Trying to add new device with mac:" + mac + ", uplinkMac: " + uplinkMac + " and deviceType: " + deviceType);
 
+        // Basic validation that doesn't require a lock
+        if (Objects.equals(mac, uplinkMac)) {
+            throw new ValidationException("Device MAC cannot be the same as its uplink MAC");
+        }
+        
+        // Acquire a distributed lock
+        String lockToken = lockService.acquireLock();
+        if (lockToken == null) {
+            throw new ConcurrentModificationException("Network topology is currently being modified. Please try again later.");
+        }
+        
         try {
-            checkIfSafeAddition(mac, uplinkMac);
+            // Now we have exclusive access to the topology
+            
+            // Check if adding this device would create a cycle
+            if (uplinkMac != null) {
+                Optional<Device> uplinkDevice = deviceRepository.findById(uplinkMac);
+                if (uplinkDevice.isEmpty()) {
+                    throw new ValidationException("Uplink device with MAC: " + uplinkMac + " does not exist");
+                }
 
+                if (wouldCreateCycle(mac, uplinkMac)) {
+                    throw new ValidationException("Adding this device would create a circular connection in the network topology");
+                }
+            }
+            
+            // Create and save the new device
             Device newDevice = switch (deviceType) {
                 case GATEWAY -> new Gateway(mac, uplinkMac, GATEWAY, new ArrayList<>());
                 case SWITCH -> new Switch(mac, uplinkMac, SWITCH, new ArrayList<>());
                 case ACCESS_POINT -> new AccessPoint(mac, uplinkMac, ACCESS_POINT, new ArrayList<>());
             };
-
+            
             log.info("Adding new device: " + newDevice);
             return deviceRepository.save(newDevice);
-        } catch (OptimisticLockingFailureException e) {
-            throw new ConcurrentModificationException("The device topology was modified concurrently. Please try again.", e);
-        }
-    }
-
-    private void checkIfSafeAddition(MacAddress mac, MacAddress uplinkMac) {
-        if (uplinkMac != null) {
-            if (Objects.equals(mac, uplinkMac)) {
-                throw new ValidationException("Device MAC cannot be the same as its uplink MAC");
-            }
-
-            Optional<Device> uplinkDevice = deviceRepository.findById(uplinkMac);
-            if (uplinkDevice.isEmpty()) {
-                throw new ValidationException("Uplink device with MAC: " + uplinkMac + " does not exist");
-            }
-
-            if (wouldCreateCycle(mac, uplinkMac)) {
-                throw new ValidationException("Adding this device would create a circular connection in the network topology");
-            }
+        } finally {
+            lockService.releaseLock(lockToken);
         }
     }
 
@@ -106,8 +118,24 @@ public class DeviceService {
     }
 
     //Extra feature
+    @Transactional
     public void deleteDevice(MacAddress mac) {
         log.info("Deleting device with mac: " + mac);
-        deviceRepository.deleteById(mac);
+        
+        // Acquire a distributed lock
+        String lockToken = lockService.acquireLock();
+        if (lockToken == null) {
+            throw new ConcurrentModificationException("Network topology is currently being modified. Please try again later.");
+        }
+        
+        try {
+            // Check if any devices depend on this one
+            // This could be implemented by checking if any device has this MAC as its uplinkMac
+            
+            // Delete the device
+            deviceRepository.deleteById(mac);
+        } finally {
+            lockService.releaseLock(lockToken);
+        }
     }
 }
