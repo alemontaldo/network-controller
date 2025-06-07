@@ -4,7 +4,10 @@ This implementation enforces a strict acyclic topology. Devices cannot uplink to
 
 # Overview
 
-with this db (cd /Users/alessandro.montaldo/Projects/ales/java/graphql/localstack && docker compose up -d)
+for development:
+
+deploy localstack:
+(cd /Users/alessandro.montaldo/Projects/ales/demo/network-controller/localstack && docker compose up -d)
 
 db browser at: http://localhost:8081/
 

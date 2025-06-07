@@ -5,16 +5,23 @@ import com.alesmontaldo.network_controller.codegen.types.DeleteDeviceResponse;
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.codegen.types.DeviceType;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
-import java.util.Map;
+import java.util.ConcurrentModificationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.graphql.data.method.annotation.*;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Controller;
+
+import java.util.Map;
 
 @Controller
 public class DeviceController {
 
+    private static final Log log = LogFactory.getLog(DeviceController.class);
+
     private final DeviceService deviceService;
-    private static final int MAX_RETRIES = 3;
-    private static final int RETRY_DELAY_MS = 500;
 
     public DeviceController(DeviceService deviceService) {
         this.deviceService = deviceService;
@@ -31,55 +38,39 @@ public class DeviceController {
     }
 
     @MutationMapping
+    @Retryable(
+            retryFor = ConcurrentModificationException.class,
+            backoff = @Backoff(delay = 500)
+    )
     public Device addDevice(@Argument("input") Map<String, Object> input) {
         MacAddress mac = (MacAddress) input.get("mac");
         MacAddress uplinkMac = (MacAddress) input.get("uplinkMac");
         DeviceType deviceType = DeviceType.valueOf((String) input.get("deviceType"));
 
-        int attempts = 0;
-        while (attempts < MAX_RETRIES) {
-            try {
-                return deviceService.addDevice(mac, uplinkMac, deviceType);
-            } catch (ConcurrentModificationException e) {
-                attempts++;
-                if (attempts >= MAX_RETRIES) {
-                    throw e;
-                }
-                
-                try {
-                    Thread.sleep(RETRY_DELAY_MS);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Operation interrupted", ie);
-                }
-            }
-        }
-        throw new RuntimeException("Failed to add device after " + MAX_RETRIES + " attempts");
+        return deviceService.addDevice(mac, uplinkMac, deviceType);
+    }
+
+    @Recover
+    public Device recoverAddDevice(ConcurrentModificationException e, Map<String, Object> input) {
+        log.error("Could not add device after multiple retries. Perhaps concurrent updates to network topology are being attempted");
+        throw new RuntimeException("Failed to add device after multiple attempts: " + e.getMessage(), e);
     }
 
     //Extra feature
     @MutationMapping
+    @Retryable(
+            retryFor = ConcurrentModificationException.class,
+            backoff = @Backoff(delay = 500)
+    )
     public DeleteDeviceResponse deleteDevice(@Argument("mac") MacAddress mac) {
-        int attempts = 0;
-        while (attempts < MAX_RETRIES) {
-            try {
-                deviceService.deleteDevice(mac);
-                // only happy path here
-                return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
-            } catch (ConcurrentModificationException e) {
-                attempts++;
-                if (attempts >= MAX_RETRIES) {
-                    return new DeleteDeviceResponse(false, "Failed to delete device: " + e.getMessage(), mac);
-                }
-                
-                try {
-                    Thread.sleep(RETRY_DELAY_MS);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Operation interrupted", ie);
-                }
-            }
-        }
-        return new DeleteDeviceResponse(false, "Failed to delete device after " + MAX_RETRIES + " attempts", mac);
+        deviceService.deleteDevice(mac);
+        // only happy path here
+        return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
+    }
+    
+    @Recover
+    public DeleteDeviceResponse recoverDeleteDevice(ConcurrentModificationException e, MacAddress mac) {
+        log.error("Could not delete device after multiple retries. Perhaps concurrent updates to network topology are being attempted");
+        return new DeleteDeviceResponse(false, "Failed to delete device after multiple attempts: " + e.getMessage(), mac);
     }
 }

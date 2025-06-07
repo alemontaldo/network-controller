@@ -1,29 +1,21 @@
-# Custom scalar for MAC addresses
-scalar MacAddress
+# --------- Queries and Mutation
 
 type Query {
     allDevicesSorted: [Device!]!
     deviceByMac(mac: MacAddress): Device
     fullTopology: Device
     subtree(mac: MacAddress): Device
-
-    athlete(id: ID) : Athlete
-    search(text: String): [SearchItem!]!
-    clubs(first: Int, after: String): ClubConnection!
 }
 
 type Mutation {
     addDevice(input: DeviceInput!): Device!
     # extra features
     deleteDevice(mac: MacAddress!): DeleteDeviceResponse!
-
-    createClub(input: ClubInput!): Club!
 }
 
-# TODO avoid circular connections
-# TODO validation like mac != uplinkMac
+# --------- Domain types
 
-# --------------------------------------------------
+scalar MacAddress
 
 enum DeviceType {
     GATEWAY
@@ -59,75 +51,7 @@ type AccessPoint implements Device {
     downlinkDevices: [Device!]!
 }
 
-
-# -----------------------
-
-union SearchItem = Club | Athlete
-
-type Club {
-    id: ID!
-    name: String!
-    totalMembers: Int!
-}
-
-type Athlete {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    activities: [Activity!]!
-}
-
-interface Activity {
-    id: ID!
-    description: String!
-    comments: [Comment!]
-}
-
-type Run implements Activity {
-    id: ID!
-    description: String!
-    comments: [Comment!]
-    elevation: Int  # In meters.
-}
-
-type Swim implements Activity {
-    id: ID!
-    description: String!
-    comments: [Comment!]
-    laps: Int
-    indoor: Boolean
-}
-
-type Rowing implements Activity {
-    id: ID!
-    description: String!
-    comments: [Comment!]
-    split: Int  # Seconds per 500 meters.
-}
-
-type Comment {
-    text: String!
-}
-
-# pagination types
-
-type ClubConnection {
-    clubEdges: [ClubEdge!]!
-    pageInfo: PageInfo!
-    totalCount: Int!
-}
-
-type ClubEdge {
-    cursor: String!
-    node: Club!
-}
-
-type PageInfo {
-    hasNextPage: Boolean!
-    endCursor: String
-}
-
-# mutation input types
+# --------- Mutation Input types
 
 input DeviceInput {
     mac: MacAddress!
@@ -139,10 +63,4 @@ type DeleteDeviceResponse {
     success: Boolean!
     message: String
     deletedMac: MacAddress
-}
-
-#-----------------------
-input ClubInput {
-    name: String!
-    totalMembers: Int!
 }
