@@ -5,6 +5,7 @@ import static com.alesmontaldo.network_controller.codegen.types.DeviceType.*;
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
+import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.DeviceMongoRepository;
 import jakarta.validation.ValidationException;
 import java.util.*;
 import org.apache.commons.logging.Log;

@@ -1,4 +1,4 @@
-package com.alesmontaldo.network_controller.domain.lock;
+package com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.lock;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

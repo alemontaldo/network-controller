@@ -1,7 +1,7 @@
 package com.alesmontaldo.network_controller.infrastructure.persistence.mongo_db;
 
-import com.alesmontaldo.network_controller.domain.device.persistance.converter.MacAddressToStringConverter;
-import com.alesmontaldo.network_controller.domain.device.persistance.converter.StringToMacAddressConverter;
+import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.converter.MacAddressToStringConverter;
+import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.converter.StringToMacAddressConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;

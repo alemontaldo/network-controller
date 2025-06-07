@@ -1,6 +1,6 @@
 package com.alesmontaldo.network_controller.infrastructure.lock;
 
-import com.alesmontaldo.network_controller.domain.lock.TopologyLock;
+import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.lock.TopologyLock;
 import com.mongodb.client.result.DeleteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @Service
 public class DistributedLockService {
     private final MongoTemplate mongoTemplate;
-    private final int LOCK_TIMEOUT_SECONDS = 30; // Lock expires after 30 seconds
+    private final int LOCK_TIMEOUT_SECONDS = 30;
     
     @Autowired
     public DistributedLockService(MongoTemplate mongoTemplate) {

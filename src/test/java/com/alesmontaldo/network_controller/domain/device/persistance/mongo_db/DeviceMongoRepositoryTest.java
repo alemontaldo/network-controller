@@ -1,7 +1,8 @@
-package com.alesmontaldo.network_controller.domain.device.persistance;
+package com.alesmontaldo.network_controller.domain.device.persistance.mongo_db;
 
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
+import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,20 +16,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class DeviceRepositoryTest {
+public class DeviceMongoRepositoryTest {
 
     @Autowired
     private DeviceRepository deviceRepository;
 
     @Autowired
-    private DeviceMongoRepository deviceMongoRepository;
+    private MongoRepository mongoRepository;
 
     private GatewayDocument testGateway;
 
     @BeforeEach
     void setUp() {
         // Clean the database before each test
-        deviceMongoRepository.deleteAll();
+        mongoRepository.deleteAll();
 
         // Create and save a test device
         testGateway = new GatewayDocument();
@@ -36,13 +37,13 @@ public class DeviceRepositoryTest {
         testGateway.setUplinkMac(null);
         testGateway.setDeviceType(DeviceType.GATEWAY);
         
-        testGateway = deviceMongoRepository.save(testGateway);
+        testGateway = mongoRepository.save(testGateway);
     }
 
     @AfterEach
     void tearDown() {
         // Clean up after each test
-        deviceMongoRepository.deleteAll();
+        mongoRepository.deleteAll();
     }
 
     @Test
@@ -73,13 +74,13 @@ public class DeviceRepositoryTest {
         switchDevice.setMac(new MacAddress("11:22:33:44:55:66"));
         switchDevice.setUplinkMac(testGateway.getMac());
         switchDevice.setDeviceType(DeviceType.SWITCH);
-        switchDevice = deviceMongoRepository.save(switchDevice);
+        switchDevice = mongoRepository.save(switchDevice);
 
         AccessPointDocument accessPoint = new AccessPointDocument();
         accessPoint.setMac(new MacAddress("AA:BB:CC:11:22:33"));
         accessPoint.setUplinkMac(switchDevice.getMac());
         accessPoint.setDeviceType(DeviceType.ACCESS_POINT);
-        accessPoint = deviceMongoRepository.save(accessPoint);
+        accessPoint = mongoRepository.save(accessPoint);
 
         // Act
         Optional<Device> gatewayResult = deviceRepository.findById(testGateway.getMac());
