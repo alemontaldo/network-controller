@@ -2,10 +2,12 @@ package com.alesmontaldo.network_controller.domain.device.persistance;
 
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.alesmontaldo.network_controller.infrastructure.lock.DistributedLockService;
+import jakarta.validation.ValidationException;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -18,17 +20,22 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DeviceRepository {
 
+    private static final Log log = LogFactory.getLog(DeviceRepository.class);
+
     private final DeviceMongoRepository deviceMongoRepository;
     private final DeviceMapper deviceMapper;
     private final MongoTemplate mongoTemplate;
+    private final DistributedLockService lockService;
 
     @Autowired
     public DeviceRepository(DeviceMongoRepository deviceMongoRepository,
                             DeviceMapper deviceMapper,
-                            MongoTemplate mongoTemplate) {
+                            MongoTemplate mongoTemplate,
+                            DistributedLockService lockService) {
         this.deviceMongoRepository = deviceMongoRepository;
         this.deviceMapper = deviceMapper;
         this.mongoTemplate = mongoTemplate;
+        this.lockService = lockService;
     }
 
     public Optional<Device> findById(MacAddress id) {
@@ -36,9 +43,81 @@ public class DeviceRepository {
         return deviceDocument.map(deviceMapper::toDevice);
     }
 
-    public Device save(Device club) {
-        DeviceDocument clubDocument = deviceMongoRepository.save(deviceMapper.toDocument(club));
-        return deviceMapper.toDevice(clubDocument);
+    /**
+     * Saves a device with distributed locking to ensure topology consistency.
+     * Validates that adding the device won't create cycles in the network topology.
+     *
+     * @param device The device to save
+     * @return The saved device
+     * @throws ConcurrentModificationException if unable to acquire a lock
+     * @throws ValidationException if adding the device would create a cycle
+     */
+    public Device save(Device device) {
+        String lockToken = lockService.acquireLock();
+        if (lockToken == null) {
+            throw new ConcurrentModificationException("Network topology is currently being modified. Please try again later.");
+        }
+        
+        try {
+            validateEventualNewCycle(device);
+
+            log.info("Adding new device: " + device);
+            DeviceDocument deviceDocument = deviceMongoRepository.save(deviceMapper.toDocument(device));
+            return deviceMapper.toDevice(deviceDocument);
+        } finally {
+            lockService.releaseLock(lockToken);
+        }
+    }
+
+    private void validateEventualNewCycle(Device device) {
+        MacAddress mac = device.getMac();
+        MacAddress uplinkMac = device.getUplinkMac();
+
+        if (uplinkMac != null) {
+            Optional<Device> uplinkDevice = findById(uplinkMac);
+            if (uplinkDevice.isEmpty()) {
+                throw new ValidationException("Uplink device with MAC: " + uplinkMac + " does not exist");
+            }
+
+            if (wouldCreateCycle(mac, uplinkMac)) {
+                throw new ValidationException("Adding this device would create a circular connection in the network topology");
+            }
+        }
+    }
+
+    /**
+     * Checks if adding a device with the given MAC and uplink MAC would create a cycle in the topology.
+     *
+     * @param newDeviceMac The MAC of the device being added
+     * @param directUplinkMac The uplink MAC of the device being added
+     * @return true if adding this device would create a cycle, false otherwise
+     */
+    private boolean wouldCreateCycle(MacAddress newDeviceMac, MacAddress directUplinkMac) {
+        // Start with the direct uplink
+        MacAddress currentMac = directUplinkMac;
+
+        // Set to keep track of visited devices to detect cycles
+        Set<MacAddress> visitedMacs = new HashSet<>();
+
+        // Traverse up the topology
+        while (currentMac != null) {
+            // If we've seen this MAC before, or if it's the same as the new device's MAC, we have a cycle
+            if (!visitedMacs.add(currentMac) || currentMac.equals(newDeviceMac)) {
+                return true;
+            }
+
+            // Get the current device's uplink
+            Optional<Device> currentDevice = findById(currentMac);
+            if (currentDevice.isEmpty()) {
+                // If the device doesn't exist, we can't go further up
+                break;
+            }
+
+            // Move to the uplink device
+            currentMac = currentDevice.get().getUplinkMac();
+        }
+
+        return false;
     }
 
     /**
@@ -121,10 +200,5 @@ public class DeviceRepository {
             // Recursively build the hierarchy for this child
             buildDeviceHierarchy(child);
         }
-    }
-
-    //Extra feature
-    public void deleteById(MacAddress id) {
-        deviceMongoRepository.deleteById(id);
     }
 }

@@ -5,137 +5,75 @@ import static com.alesmontaldo.network_controller.codegen.types.DeviceType.*;
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
-import com.alesmontaldo.network_controller.infrastructure.lock.DistributedLockService;
 import jakarta.validation.ValidationException;
 import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service for device-related business operations.
+ * Focuses on business logic while delegating persistence concerns to the repository.
+ */
 @Service
 public class DeviceService {
 
     private static final Log log = LogFactory.getLog(DeviceService.class);
 
     private final DeviceRepository deviceRepository;
-    private final DistributedLockService lockService;
 
     @Autowired
-    public DeviceService(DeviceRepository deviceRepository, DistributedLockService lockService) {
+    public DeviceService(DeviceRepository deviceRepository) {
         this.deviceRepository = deviceRepository;
-        this.lockService = lockService;
     }
 
+    /**
+     * Retrieves a device by its MAC address.
+     *
+     * @param mac The MAC address of the device to retrieve
+     * @return The device if found, null otherwise
+     */
     public Device getDeviceByMac(MacAddress mac) {
         log.info("Fetching device with mac: " + mac);
         return deviceRepository.findById(mac).orElse(null);
     }
 
-    @Transactional
+    /**
+     * Adds a new device to the network.
+     * Performs basic validation and creates the appropriate device type.
+     * Delegates topology consistency checks and locking to the repository layer.
+     *
+     * @param mac The MAC address of the new device
+     * @param uplinkMac The MAC address of the uplink device (can be null for root devices)
+     * @param deviceType The type of device to create
+     * @return The newly created device
+     */
     public Device addDevice(MacAddress mac, MacAddress uplinkMac, DeviceType deviceType) {
         log.info("Trying to add new device with mac:" + mac + ", uplinkMac: " + uplinkMac + " and deviceType: " + deviceType);
 
-        // Basic validation that doesn't require a lock
+        // Basic validation that doesn't require topology-wide consistency
         if (Objects.equals(mac, uplinkMac)) {
             throw new ValidationException("Device MAC cannot be the same as its uplink MAC");
         }
         
-        // Acquire a distributed lock
-        String lockToken = lockService.acquireLock();
-        if (lockToken == null) {
-            throw new ConcurrentModificationException("Network topology is currently being modified. Please try again later.");
-        }
-        
-        try {
-            // Now we have exclusive access to the topology
-            
-            // Check if adding this device would create a cycle
-            if (uplinkMac != null) {
-                Optional<Device> uplinkDevice = deviceRepository.findById(uplinkMac);
-                if (uplinkDevice.isEmpty()) {
-                    throw new ValidationException("Uplink device with MAC: " + uplinkMac + " does not exist");
-                }
+        // Create the appropriate device type
+        Device newDevice = switch (deviceType) {
+            case GATEWAY -> new Gateway(mac, uplinkMac, GATEWAY, new ArrayList<>());
+            case SWITCH -> new Switch(mac, uplinkMac, SWITCH, new ArrayList<>());
+            case ACCESS_POINT -> new AccessPoint(mac, uplinkMac, ACCESS_POINT, new ArrayList<>());
+        };
 
-                if (wouldCreateCycle(mac, uplinkMac)) {
-                    throw new ValidationException("Adding this device would create a circular connection in the network topology");
-                }
-            }
-            
-            // Create and save the new device
-            Device newDevice = switch (deviceType) {
-                case GATEWAY -> new Gateway(mac, uplinkMac, GATEWAY, new ArrayList<>());
-                case SWITCH -> new Switch(mac, uplinkMac, SWITCH, new ArrayList<>());
-                case ACCESS_POINT -> new AccessPoint(mac, uplinkMac, ACCESS_POINT, new ArrayList<>());
-            };
-            
-            log.info("Adding new device: " + newDevice);
-            return deviceRepository.save(newDevice);
-        } finally {
-            lockService.releaseLock(lockToken);
-        }
+        return deviceRepository.save(newDevice);
     }
 
     /**
-     * Checks if adding a device with the given MAC and uplink MAC would create a cycle in the topology.
+     * Retrieves a device and its entire subtree.
      *
-     * @param newDeviceMac The MAC of the device being added
-     * @param directUplinkMac The uplink MAC of the device being added
-     * @return true if adding this device would create a cycle, false otherwise
+     * @param rootMac The MAC address of the root device
+     * @return The device with its subtree if found, null otherwise
      */
-    private boolean wouldCreateCycle(MacAddress newDeviceMac, MacAddress directUplinkMac) {
-        // Start with the direct uplink
-        MacAddress currentMac = directUplinkMac;
-
-        // Set to keep track of visited devices to detect cycles
-        Set<MacAddress> visitedMacs = new HashSet<>();
-
-        // Traverse up the topology
-        while (currentMac != null) {
-            // If we've seen this MAC before, or if it's the same as the new device's MAC, we have a cycle
-            if (!visitedMacs.add(currentMac) || currentMac.equals(newDeviceMac)) {
-                return true;
-            }
-
-            // Get the current device's uplink
-            Optional<Device> currentDevice = deviceRepository.findById(currentMac);
-            if (currentDevice.isEmpty()) {
-                // If the device doesn't exist, we can't go further up
-                break;
-            }
-
-            // Move to the uplink device
-            currentMac = currentDevice.get().getUplinkMac();
-        }
-
-        return false;
-    }
-
     public Device getSubtree(MacAddress rootMac) {
         return deviceRepository.fetchSubtree(rootMac).orElse(null);
-    }
-
-    //Extra feature
-    @Transactional
-    public void deleteDevice(MacAddress mac) {
-        log.info("Deleting device with mac: " + mac);
-        
-        // Acquire a distributed lock
-        String lockToken = lockService.acquireLock();
-        if (lockToken == null) {
-            throw new ConcurrentModificationException("Network topology is currently being modified. Please try again later.");
-        }
-        
-        try {
-            // Check if any devices depend on this one
-            // This could be implemented by checking if any device has this MAC as its uplinkMac
-            
-            // Delete the device
-            deviceRepository.deleteById(mac);
-        } finally {
-            lockService.releaseLock(lockToken);
-        }
     }
 }

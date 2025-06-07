@@ -9,8 +9,6 @@ type Query {
 
 type Mutation {
     addDevice(input: DeviceInput!): Device!
-    # extra features
-    deleteDevice(mac: MacAddress!): DeleteDeviceResponse!
 }
 
 # --------- Domain types

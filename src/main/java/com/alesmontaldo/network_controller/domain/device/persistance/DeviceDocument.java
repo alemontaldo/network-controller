@@ -11,10 +11,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public abstract class DeviceDocument {
 
     @Id
-    protected MacAddress mac;          // e.g. "AA:BB:CC:DD:EE:FF"
-    protected MacAddress uplinkMac;    // parent’s MAC, null if root
+    protected MacAddress mac;
+    protected MacAddress uplinkMac;
     protected DeviceType deviceType;
 
+    // @Transactional operations are not needed in the scope of this
+    // assignment, but IMHO it's better to include @Version since the beginning
+    // for future-proofing
     @Version
     private Long version;
 

@@ -9,7 +9,7 @@ print("Creating TTL index for topology_locks collection...");
 // Create TTL index for topology locks collection
 // This will automatically remove documents when their expiresAt field is in the past
 //  NOTE: The MongoDB TTL monitor runs approximately once every 60 seconds, so there can be up to a 60-second
-// delay before expired documents are removed but for this demo that's not an issue
+// delay before expired documents are removed but for this assignment that's not an issue
 db.topology_locks.createIndex(
     { "expiresAt": 1 },
     { 

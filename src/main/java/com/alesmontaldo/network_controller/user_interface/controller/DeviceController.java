@@ -1,7 +1,6 @@
 package com.alesmontaldo.network_controller.user_interface.controller;
 
 import com.alesmontaldo.network_controller.application.DeviceService;
-import com.alesmontaldo.network_controller.codegen.types.DeleteDeviceResponse;
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.codegen.types.DeviceType;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
@@ -54,23 +53,5 @@ public class DeviceController {
     public Device recoverAddDevice(ConcurrentModificationException e, Map<String, Object> input) {
         log.error("Could not add device after multiple retries. Perhaps concurrent updates to network topology are being attempted");
         throw new RuntimeException("Failed to add device after multiple attempts: " + e.getMessage(), e);
-    }
-
-    //Extra feature
-    @MutationMapping
-    @Retryable(
-            retryFor = ConcurrentModificationException.class,
-            backoff = @Backoff(delay = 500)
-    )
-    public DeleteDeviceResponse deleteDevice(@Argument("mac") MacAddress mac) {
-        deviceService.deleteDevice(mac);
-        // only happy path here
-        return new DeleteDeviceResponse(true, "Device successfully deleted", mac);
-    }
-    
-    @Recover
-    public DeleteDeviceResponse recoverDeleteDevice(ConcurrentModificationException e, MacAddress mac) {
-        log.error("Could not delete device after multiple retries. Perhaps concurrent updates to network topology are being attempted");
-        return new DeleteDeviceResponse(false, "Failed to delete device after multiple attempts: " + e.getMessage(), mac);
     }
 }

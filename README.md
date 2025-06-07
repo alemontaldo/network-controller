@@ -1,6 +1,28 @@
+## TODO:
+optional validation hook configurable
+
+The app supports configurable uplink validation rules to restrict which device types may connect to others, 
+but this logic is optional and disabled by default to maximize flexibility.
+
+maybe with something like this:
+```java
+Map<DeviceType, Set<DeviceType>> allowedUplinkMap = Map.of(
+    GATEWAY, Set.of(), // can't uplink to anything
+    SWITCH, Set.of(GATEWAY),
+    ACCESS_POINT, Set.of(GATEWAY, SWITCH)
+);
+```
+
 # Notes
 
 This implementation enforces a strict acyclic topology. Devices cannot uplink to their descendants or create cycles in the network structure.
+
+Future work:
+- Delete Functionality (Not Implemented):
+In a real-world scenario, network devices are added and removed. 
+A safe deletion feature (e.g., with cascading rules) could be added to maintain topology integrity. 
+However, since it is not part of the original requirements, it is not included in this implementation.
+
 
 # Overview
 
