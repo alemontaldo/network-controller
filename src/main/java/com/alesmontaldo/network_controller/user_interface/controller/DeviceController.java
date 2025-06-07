@@ -4,6 +4,7 @@ import com.alesmontaldo.network_controller.application.DeviceService;
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.codegen.types.DeviceType;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
+import jakarta.validation.ValidationException;
 import java.util.ConcurrentModificationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +39,7 @@ public class DeviceController {
 
     @MutationMapping
     @Retryable(
-            retryFor = ConcurrentModificationException.class,
+            retryFor = {ConcurrentModificationException.class, ValidationException.class},
             backoff = @Backoff(delay = 500)
     )
     public Device addDevice(@Argument("input") Map<String, Object> input) {
@@ -53,5 +54,11 @@ public class DeviceController {
     public Device recoverAddDevice(ConcurrentModificationException e, Map<String, Object> input) {
         log.error("Could not add device after multiple retries. Perhaps concurrent updates to network topology are being attempted");
         throw new RuntimeException("Failed to add device after multiple attempts: " + e.getMessage(), e);
+    }
+
+    @Recover
+    public Device recoverAddDeviceValidation(ValidationException e, Map<String, Object> input) {
+        log.error("Could not add device due to validation error", e);
+        throw new RuntimeException("Failed to add device: " + e.getMessage(), e);
     }
 }

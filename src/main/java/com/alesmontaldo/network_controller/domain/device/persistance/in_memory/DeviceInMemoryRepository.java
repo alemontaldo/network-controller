@@ -35,6 +35,7 @@ public class DeviceInMemoryRepository implements DeviceRepository {
     @Override
     public Device save(Device device) {
         synchronized(lockObject) {
+            log.info("Validating device addition for an eventual new cycle for device: " + device);
             validateEventualNewCycle(device);
             
             log.info("Adding new device: " + device);
