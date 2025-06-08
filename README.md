@@ -1,41 +1,42 @@
-## TODO:
-optional validation hook configurable
+# Network controller
 
-The app supports configurable uplink validation rules to restrict which device types may connect to others, 
-but this logic is optional and disabled by default to maximize flexibility.
+## introduction
 
-maybe with something like this:
-```java
-Map<DeviceType, Set<DeviceType>> allowedUplinkMap = Map.of(
-    GATEWAY, Set.of(), // can't uplink to anything
-    SWITCH, Set.of(GATEWAY),
-    ACCESS_POINT, Set.of(GATEWAY, SWITCH)
-);
+
+## assignment description
+
+
+## Details about this implementation
+
+This implementation enforces a strict acyclic topology.
+Devices cannot uplink to their descendants or create cycles in the network structure.
+More precisely the network can be though as a forest of trees
+(devices can be unconnected and multiple unconnected regions of networks are allowed).
+
+two implementations are available for persistence:
+- in memory storage (use spring profile active: in-memory)
+- mongo DB (recommended. there is a docker compose for that)
+
+## Run the application
+
+if you want to run the app with MongoDB storage, deploy localstack:
+
+```bash
+(cd localstack && docker compose up -d)
 ```
 
-# Notes
+this will create two containers:
+1. MongoDB
+2. Mongo Express (a MongoDB GUI that will be available at: http://localhost:8081/
 
-This implementation enforces a strict acyclic topology. Devices cannot uplink to their descendants or create cycles in the network structure.
+for development, run the app with:
+```bash
 
-Future work:
-- Delete Functionality (Not Implemented):
-In a real-world scenario, network devices are added and removed. 
-A safe deletion feature (e.g., with cascading rules) could be added to maintain topology integrity. 
-However, since it is not part of the original requirements, it is not included in this implementation.
+```
 
+After starting the app a GraphQL client is available at: http://localhost:8080/graphiql?path=/graphql
 
-# Overview
-
-for development:
-
-deploy localstack:
-(cd /Users/alessandro.montaldo/Projects/ales/demo/network-controller/localstack && docker compose up -d)
-
-db browser at: http://localhost:8081/
-
-at: http://localhost:8080/graphiql?path=/graphql
-
-## Tasks
+## Queries and mutations available
 
 1. Registering a device to a network deployment:
    input: `deviceType`, `macAddress`, `uplinkMacAddress`
