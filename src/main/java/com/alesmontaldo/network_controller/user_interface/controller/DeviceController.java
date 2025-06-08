@@ -65,7 +65,7 @@ public class DeviceController {
     @QueryMapping
     public Object fullTopology() {
         try {
-            return deviceService.getFullTopology();
+            return new JsonResult(deviceService.getFullTopology());
         } catch (Exception e) {
             log.error("Error retrieving full topology", e);
             return new ServerError("Failed to retrieve network topology: " + e.getMessage(), "INTERNAL_SERVER_ERROR");

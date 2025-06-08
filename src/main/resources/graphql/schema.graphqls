@@ -3,7 +3,7 @@
 type Query {
     allDevicesSorted: [Device!]!
     deviceByMac(macAddress: MacAddress): Device #TODO improve error reporting
-    fullTopology: JSON #TODO improve error reporting
+    fullTopology: DeviceTopologyResult!
     deviceTopology(macAddress: MacAddress): DeviceTopologyResult!
 }
 
@@ -14,7 +14,6 @@ type Mutation {
 # --------- Domain types
 
 scalar MacAddress
-scalar JSON
 
 enum DeviceType {
     GATEWAY
@@ -49,6 +48,10 @@ type AccessPoint implements Device {
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
+
+# there types are useful to represent network topology
+#  which otherwise would be cumbersome to query in graphql
+scalar JSON
 
 type JsonResult {
     data: JSON
