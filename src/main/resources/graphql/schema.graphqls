@@ -8,7 +8,7 @@ type Query {
 }
 
 type Mutation {
-    addDevice(input: DeviceInput!): Device!
+    addDevice(input: DeviceInput!): AddDeviceResult!
 }
 
 # --------- Domain types
@@ -57,8 +57,19 @@ input DeviceInput {
     deviceType: DeviceType!
 }
 
-type DeleteDeviceResponse {
-    success: Boolean!
-    message: String
-    deletedMac: MacAddress
+# --------- Error types
+
+interface Error {
+    message: String!
 }
+
+type ValidationError implements Error {
+    message: String!
+}
+
+type ServerError implements Error {
+    message: String!
+    errorCode: String
+}
+
+union AddDeviceResult = Gateway | Switch | AccessPoint | ValidationError | ServerError

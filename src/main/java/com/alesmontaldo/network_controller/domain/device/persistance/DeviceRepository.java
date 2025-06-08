@@ -3,7 +3,11 @@ package com.alesmontaldo.network_controller.domain.device.persistance;
 import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 
+import jakarta.validation.ValidationException;
+import java.util.ConcurrentModificationException;
 import java.util.Optional;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 
 /**
  * Repository interface for device operations.
@@ -28,6 +32,10 @@ public interface DeviceRepository {
      * @throws ConcurrentModificationException if unable to acquire a lock
      * @throws ValidationException if adding the device would create a cycle
      */
+    @Retryable(
+            retryFor = {ConcurrentModificationException.class, ValidationException.class},
+            backoff = @Backoff(delay = 500, maxDelay = 2_000)
+    )
     Device save(Device device);
     
     /**
