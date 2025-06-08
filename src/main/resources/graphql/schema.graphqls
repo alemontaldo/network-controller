@@ -57,7 +57,7 @@ union AddDeviceResult = Gateway | Switch | AccessPoint | ValidationError | Serve
 
 union DeviceTopologyResult = JsonResult | ValidationError | ServerError
 
-# there types are useful to represent network topology
+# these types are useful to represent network topology
 #  which otherwise would be cumbersome to query in graphql
 scalar JSON
 
