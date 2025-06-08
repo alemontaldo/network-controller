@@ -35,59 +35,74 @@ db browser at: http://localhost:8081/
 
 at: http://localhost:8080/graphiql?path=/graphql
 
-```graphql
-{
-  deviceByMac(mac: "AA:BB:CC:DD:EE:FF") {
-    mac
-    uplinkMac
-    downlinkDevices {
-      mac
-    }
-  }
-}
-```
+## Tasks
 
-```graphql
-mutation {
-    addDevice(
-        input: {
-            mac: "CC:CC:CC:CC:CC:CC",
-            deviceType: SWITCH,
-            #uplinkMac: "BB:BB:BB:BB:BB:BB"
-        }
-    ) {
-        ... on Device {
-            mac
-            uplinkMac
-            deviceType
-        }
-        ... on ValidationError {
-            message
-        }
-        ... on ServerError {
-            message
-            errorCode
+1. Registering a device to a network deployment:
+   input: `deviceType`, `macAddress`, `uplinkMacAddress`
+    
+    ```graphql
+    mutation {
+        addDevice(
+            input: {deviceType: ACCESS_POINT, mac: "BB:BB:BB:BB:BB:BB", uplinkMac: "AA:AA:AA:AA:AA:AA"}
+        ) {
+            ... on Gateway {
+                mac
+                uplinkMac
+                deviceType
+            }
+            ... on Switch {
+                mac
+                uplinkMac
+                deviceType
+            }
+            ... on AccessPoint {
+                mac
+                uplinkMac
+                deviceType
+            }
+            ... on ValidationError {
+                message
+            }
+            ... on ServerError {
+                message
+                errorCode
+            }
         }
     }
-}
-```
+    ```
 
-```graphql
-{
-  subtree(mac: "BB:BB:CC:DD:EE:FF") {
-    mac
-    uplinkMac
-    deviceType
-    downlinkDevices {
-      mac
-      uplinkMac
-      deviceType
-      downlinkDevices {
+2. Retrieving all registered devices, sorted by `deviceType`
+   output: sorted list of devices, where each entry has `deviceType` and `macAddress` 
+   (sorting order: `Gateway` > `Switch` > `Access Point`)
+
+   MISSING
+
+3. Retrieving network deployment device by MAC address:
+   input: `macAddress`
+   output: Device entry, which consists of `deviceType` and `macAddress`
+    
+   ```graphql
+    {
+      deviceByMac(mac: "AA:BB:CC:DD:EE:FF") {
         mac
         uplinkMac
-        deviceType
+        downlinkDevices {
+          mac
+        }
       }
     }
-  }
-}
-```
+    ```
+
+4. Retrieving all registered network device topology
+   output: `Device topology` as tree structure, node should be represented as `macAddress`
+
+   MISSING
+
+5. Retrieving network device topology starting from a specific device.
+   input: `macAddress`
+   output: `Device topology` where root node is device with matching macAddress 
+
+    ```graphql
+    {subtree(mac: "AA:AA:AA:AA:AA:AA")}
+    ```
+

@@ -4,6 +4,7 @@ import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.codegen.types.ServerError;
 import com.alesmontaldo.network_controller.codegen.types.ValidationError;
 import com.alesmontaldo.network_controller.user_interface.scalar.MacAddressScalar;
+import graphql.scalars.ExtendedScalars;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
@@ -25,6 +26,7 @@ public class GraphQLConfig {
         return wiringBuilder -> {
             // Register custom scalars
             wiringBuilder.scalar(MacAddressScalar.MAC_ADDRESS);
+            wiringBuilder.scalar(ExtendedScalars.Json);
             
             // Register type resolvers for the union types
             wiringBuilder.type("AddDeviceResult", typeConfig -> typeConfig

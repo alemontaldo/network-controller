@@ -24,6 +24,7 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation "org.springframework.retry:spring-retry"
 	implementation "org.springframework.boot:spring-boot-starter-aop"
+	implementation "com.graphql-java:graphql-java-extended-scalars:${graphql_java_extended_scalars_version}"
 
 	implementation "org.mapstruct:mapstruct:${mapstruct_version}"
 
