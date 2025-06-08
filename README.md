@@ -43,21 +43,21 @@ at: http://localhost:8080/graphiql?path=/graphql
     ```graphql
     mutation {
         addDevice(
-            input: {deviceType: ACCESS_POINT, macAddress: "BB:BB:BB:BB:BB:BB", uplinkMac: "AA:AA:AA:AA:AA:AA"}
+            input: {deviceType: ACCESS_POINT, macAddress: "BB:BB:BB:BB:BB:BB", uplinkMacAddress: "AA:AA:AA:AA:AA:AA"}
         ) {
             ... on Gateway {
                 macAddress
-                uplinkMac
+                uplinkMacAddress
                 deviceType
             }
             ... on Switch {
                 macAddress
-                uplinkMac
+                uplinkMacAddress
                 deviceType
             }
             ... on AccessPoint {
                 macAddress
-                uplinkMac
+                uplinkMacAddress
                 deviceType
             }
             ... on ValidationError {
@@ -85,7 +85,7 @@ at: http://localhost:8080/graphiql?path=/graphql
     {
       deviceByMac(macAddress: "AA:BB:CC:DD:EE:FF") {
         macAddress
-        uplinkMac
+        uplinkMacAddress
         downlinkDevices {
           macAddress
         }
