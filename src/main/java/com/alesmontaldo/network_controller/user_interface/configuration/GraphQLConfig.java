@@ -1,9 +1,9 @@
 package com.alesmontaldo.network_controller.user_interface.configuration;
 
 import com.alesmontaldo.network_controller.codegen.types.*;
+import com.alesmontaldo.network_controller.domain.device.NOPEJsonResult;
 import com.alesmontaldo.network_controller.user_interface.scalar.MacAddressScalar;
 import graphql.scalars.ExtendedScalars;
-import graphql.scalars.object.JsonScalar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
@@ -48,8 +48,8 @@ public class GraphQLConfig {
             wiringBuilder.type("DeviceTopologyResult", typeConfig -> typeConfig
                     .typeResolver(env -> {
                         Object result = env.getObject();
-                        if (result instanceof JsonScalar) {
-                            return env.getSchema().getObjectType("Gateway");
+                        if (result instanceof JsonResult) {
+                            return env.getSchema().getObjectType("JsonResult");
                         } else if (result instanceof ValidationError) {
                             return env.getSchema().getObjectType("ValidationError");
                         } else if (result instanceof ServerError) {

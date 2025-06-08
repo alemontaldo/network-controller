@@ -24,6 +24,7 @@ public class DeviceController {
         this.deviceService = deviceService;
     }
 
+    //TODO: "downlinkDevices": [] even when is there. fix me
     @QueryMapping
     public Device deviceByMac(@Argument MacAddress macAddress) {
         return deviceService.getDeviceByMac(macAddress);
@@ -50,7 +51,7 @@ public class DeviceController {
     public Object deviceTopology(@Argument MacAddress macAddress) {
         try {
             Device device = deviceService.getSubtree(macAddress);
-            return deviceService.buildSimplifiedTopology(device);
+            return new JsonResult(deviceService.buildSimplifiedTopology(device));
         } catch (ValidationException e) {
             log.warn("Validation error when getting device topology: " + e.getMessage());
             return new ValidationError(e.getMessage());

@@ -50,6 +50,10 @@ type AccessPoint implements Device {
     downlinkDevices: [Device!]!
 }
 
+type JsonResult {
+    data: JSON
+}
+
 # --------- Mutation Input types
 
 input DeviceInput {
@@ -75,4 +79,4 @@ type ServerError implements Error {
 
 union AddDeviceResult = Gateway | Switch | AccessPoint | ValidationError | ServerError
 
-union DeviceTopologyResult = JSON | ValidationError | ServerError
+union DeviceTopologyResult = JsonResult | ValidationError | ServerError
