@@ -82,15 +82,21 @@ at: http://localhost:8080/graphiql?path=/graphql
    output: Device entry, which consists of `deviceType` and `macAddress`
     
    ```graphql
-    {
-      deviceByMac(macAddress: "AA:AA:AA:AA:AA:AA") {
-        macAddress
-        uplinkMacAddress
-        downlinkDevices {
-          macAddress
-        }
+   {
+      getDevice(macAddress: "AA:AA:AA:AA:AA:AA") {
+         ... on DeviceResultView {
+            macAddress
+            deviceType
+         }
+         ... on ValidationError {
+            message
+         }
+         ... on ServerError {
+            message
+            errorCode
+         }
       }
-    }
+   }
     ```
 
 4. Retrieving all registered network device topology

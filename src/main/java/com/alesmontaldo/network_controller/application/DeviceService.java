@@ -33,13 +33,19 @@ public class DeviceService {
     /**
      * Retrieves a device by its MAC address.
      *
-     * @param mac The MAC address of the device to retrieve
-     * @return The device if found, null otherwise
+     * @param macAddress The MAC address of the device to retrieve
+     * @throws ValidationException could not find device with given id
+     * @return The device found
      */
-    public Device getDeviceByMac(MacAddress mac) {
-        log.info("Fetching device with mac: " + mac);
-        //TODO add validation if device not found
-        return deviceRepository.findById(mac).orElse(null);
+    @NotNull
+    public Device getDeviceByMac(MacAddress macAddress) {
+        log.info("Fetching device with mac: " + macAddress);
+        Optional<Device> fromDb = deviceRepository.findById(macAddress);
+        if (fromDb.isEmpty()) {
+            throw new ValidationException("Device with MAC address: " + macAddress + " cannot be found");
+        }
+        log.info("Found device: " + fromDb);
+        return fromDb.get();
     }
 
     /**

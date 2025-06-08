@@ -1,7 +1,6 @@
 package com.alesmontaldo.network_controller.user_interface.configuration;
 
 import com.alesmontaldo.network_controller.codegen.types.*;
-import com.alesmontaldo.network_controller.domain.device.NOPEJsonResult;
 import com.alesmontaldo.network_controller.user_interface.scalar.MacAddressScalar;
 import graphql.scalars.ExtendedScalars;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +36,19 @@ public class GraphQLConfig {
                             return env.getSchema().getObjectType("Switch");
                         } else if (result instanceof AccessPoint) {
                             return env.getSchema().getObjectType("AccessPoint");
+                        } else if (result instanceof ValidationError) {
+                            return env.getSchema().getObjectType("ValidationError");
+                        } else if (result instanceof ServerError) {
+                            return env.getSchema().getObjectType("ServerError");
+                        }
+                        return null;
+                    }));
+
+            wiringBuilder.type("GetDeviceResult", typeConfig -> typeConfig
+                    .typeResolver(env -> {
+                        Object result = env.getObject();
+                        if (result instanceof DeviceResultView) {
+                            return env.getSchema().getObjectType("DeviceResultView");
                         } else if (result instanceof ValidationError) {
                             return env.getSchema().getObjectType("ValidationError");
                         } else if (result instanceof ServerError) {

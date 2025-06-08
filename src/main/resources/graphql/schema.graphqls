@@ -1,10 +1,10 @@
 # --------- Queries and Mutation
 
 type Query {
+    getDevice(macAddress: MacAddress!): GetDeviceResult!
     allDevicesSorted: [Device!]!
-    deviceByMac(macAddress: MacAddress): Device #TODO improve error reporting
     fullTopology: DeviceTopologyResult!
-    deviceTopology(macAddress: MacAddress): DeviceTopologyResult!
+    deviceTopology(macAddress: MacAddress!): DeviceTopologyResult!
 }
 
 type Mutation {
@@ -49,12 +49,25 @@ type AccessPoint implements Device {
     downlinkDevices: [Device!]!
 }
 
+# --------- Response types
+
+union GetDeviceResult = DeviceResultView | ValidationError | ServerError
+
+union AddDeviceResult = Gateway | Switch | AccessPoint | ValidationError | ServerError
+
+union DeviceTopologyResult = JsonResult | ValidationError | ServerError
+
 # there types are useful to represent network topology
 #  which otherwise would be cumbersome to query in graphql
 scalar JSON
 
 type JsonResult {
     data: JSON
+}
+
+type DeviceResultView {
+    macAddress: MacAddress!
+    deviceType: DeviceType!
 }
 
 # --------- Mutation Input types
@@ -79,7 +92,3 @@ type ServerError implements Error {
     message: String!
     errorCode: String
 }
-
-union AddDeviceResult = Gateway | Switch | AccessPoint | ValidationError | ServerError
-
-union DeviceTopologyResult = JsonResult | ValidationError | ServerError

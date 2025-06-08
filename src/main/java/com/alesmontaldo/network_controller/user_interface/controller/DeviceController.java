@@ -24,16 +24,25 @@ public class DeviceController {
         this.deviceService = deviceService;
     }
 
-    //TODO: "downlinkDevices": [] even when is there. fix me
     @QueryMapping
-    public Device deviceByMac(@Argument MacAddress macAddress) {
-        return deviceService.getDeviceByMac(macAddress);
+    public GetDeviceResult getDevice(@Argument MacAddress macAddress) {
+        try {
+            log.info("Finding device with mac address: " + macAddress);
+            Device device = deviceService.getDeviceByMac(macAddress);
+            return new DeviceResultView(device.getMacAddress(), device.getDeviceType());
+        } catch (ValidationException e) {
+            log.warn("Validation error when getting device: " + e.getMessage());
+            return new ValidationError(e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error when getting device for mac address:" + macAddress);
+            return new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
+        }
     }
 
     @MutationMapping
-    public Object addDevice(@Argument("input") DeviceInput deviceInput) {
+    public AddDeviceResult addDevice(@Argument("input") DeviceInput deviceInput) {
         try {
-            return deviceService.addDevice(deviceInput.getMacAddress(), deviceInput.getUplinkMacAddress(), deviceInput.getDeviceType());
+            return (AddDeviceResult) deviceService.addDevice(deviceInput.getMacAddress(), deviceInput.getUplinkMacAddress(), deviceInput.getDeviceType());
         } catch (ValidationException e) {
             log.warn("Validation error when adding device: " + e.getMessage());
             return new ValidationError(e.getMessage());
@@ -48,7 +57,18 @@ public class DeviceController {
 
     //TODO: discuss limitations of this approach
     @QueryMapping
-    public Object deviceTopology(@Argument MacAddress macAddress) {
+    public DeviceTopologyResult fullTopology() {
+        try {
+            return new JsonResult(deviceService.getFullTopology());
+        } catch (Exception e) {
+            log.error("Error retrieving full topology", e);
+            return new ServerError("Failed to retrieve network topology: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
+        }
+    }
+
+    //TODO: discuss limitations of this approach
+    @QueryMapping
+    public DeviceTopologyResult deviceTopology(@Argument MacAddress macAddress) {
         try {
             Device device = deviceService.getSubtree(macAddress);
             return new JsonResult(deviceService.buildSimplifiedTopology(device));
@@ -58,17 +78,6 @@ public class DeviceController {
         } catch (Exception e) {
             log.error("Unexpected error when getting device topology for mac address:" + macAddress);
             return new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
-        }
-    }
-
-    //TODO: discuss limitations of this approach
-    @QueryMapping
-    public Object fullTopology() {
-        try {
-            return new JsonResult(deviceService.getFullTopology());
-        } catch (Exception e) {
-            log.error("Error retrieving full topology", e);
-            return new ServerError("Failed to retrieve network topology: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
         }
     }
 }
