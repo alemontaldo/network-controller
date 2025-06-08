@@ -49,6 +49,11 @@ public class DeviceService {
         return fromDb.get();
     }
 
+    /**
+     * Retrieves all devices sorted by deviceType.
+     *
+     * @return all devices sorted by deviceType
+     */
     public List<DeviceResultView> getAllDevicesSorted() {
         List<Device> allDevices = deviceRepository.findAll();
 

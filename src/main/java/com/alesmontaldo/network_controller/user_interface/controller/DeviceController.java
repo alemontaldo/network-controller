@@ -37,14 +37,14 @@ public class DeviceController {
         }
     }
 
+    //TODO: discuss limitations of this approach
     @QueryMapping
-    public List<DeviceResultView> allDevicesSorted() {
+    public List<? extends GetDeviceResult> allDevicesSorted() {
         try {
             return deviceService.getAllDevicesSorted();
         } catch (Exception e) {
-            //TODO implement better error handling
-            log.error("Error retrieving sorted devices", e);
-            throw new RuntimeException("Failed to retrieve sorted devices: " + e.getMessage());
+            log.error("Unexpected error when getting all devices sorted", e);
+            return List.of(new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR"));
         }
     }
 

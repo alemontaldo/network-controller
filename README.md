@@ -77,12 +77,16 @@ at: http://localhost:8080/graphiql?path=/graphql
 
    ```graphql
    {
-     allDevicesSorted {
-       ... on DeviceResultView {
-         macAddress
-         deviceType
-       }
-     }
+      allDevicesSorted {
+         ... on DeviceResultView {
+            macAddress
+            deviceType
+         }
+         ... on ServerError {
+            message
+            errorCode
+         }
+      }
    }
    ```
 
