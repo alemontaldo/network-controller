@@ -38,10 +38,10 @@ dependencies {
 generateJava {
 	schemaPaths = ["${projectDir}/src/main/resources/graphql"]
 	packageName = 'com.alesmontaldo.network_controller.codegen'
+	//TODO keep this?
 	generateClient = true
 	generateDataTypes = true
-	
-	// Custom scalar mapping for MacAddress
+	generateInterfaceMethodsForInterfaceFields = true
 	typeMapping = [
 		"MacAddress": "com.alesmontaldo.network_controller.domain.device.MacAddress"
 	]

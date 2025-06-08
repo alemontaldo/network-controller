@@ -29,15 +29,13 @@ public class DeviceController {
 
     @QueryMapping
     public Object deviceTopology(@Argument MacAddress macAddress) {
-        Device device = deviceService.getSubtree(macAddress);
-        if (device == null) {
-            return null;
+        try {
+            Device device = deviceService.getSubtree(macAddress);
+            return deviceService.buildSimplifiedTopology(device);
+        } catch (ValidationException e) {
+            log.warn("Validation error when getting device topology: " + e.getMessage());
+            return new ValidationError(e.getMessage());
         }
-        
-        //return convertDeviceToMap(device);
-        Map<String, Object> result = new HashMap<>();
-        result.put("Device Topology", device);
-        return result;
     }
 
     @MutationMapping
@@ -55,34 +53,4 @@ public class DeviceController {
             return new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
         }
     }
-    
-//    /**
-//     * Recursively converts a Device object to a Map structure suitable for JSON serialization.
-//     * This ensures the complete hierarchy is included without GraphQL field selection limitations.
-//     */
-//    private Map<String, Object> convertDeviceToMap(Device device) {
-//        if (device == null) {
-//            return null;
-//        }
-//
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("mac", device.getMacAddress().getValue());
-//        result.put("deviceType", device.getDeviceType().toString());
-//
-//        if (device.getUplinkMacAddress() != null) {
-//            result.put("uplinkMac", device.getUplinkMacAddress().getValue());
-//        } else {
-//            result.put("uplinkMac", null);
-//        }
-//
-//        List<Map<String, Object>> children = new ArrayList<>();
-//        if (device.getDownlinkDevices() != null) {
-//            for (Device child : device.getDownlinkDevices()) {
-//                children.add(convertDeviceToMap(child));
-//            }
-//        }
-//        result.put("downlinkDevices", children);
-//
-//        return result;
-//    }
 }
