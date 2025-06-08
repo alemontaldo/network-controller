@@ -4,7 +4,7 @@ type Query {
     allDevicesSorted: [Device!]!
     deviceByMac(macAddress: MacAddress): Device
     fullTopology: Device
-    subtree(macAddress: MacAddress): JSON
+    deviceTopology(macAddress: MacAddress): JSON
 }
 
 type Mutation {

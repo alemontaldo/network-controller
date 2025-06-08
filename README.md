@@ -103,6 +103,8 @@ at: http://localhost:8080/graphiql?path=/graphql
    output: `Device topology` where root node is device with matching macAddress 
 
     ```graphql
-    {subtree(macAddress: "AA:AA:AA:AA:AA:AA")}
+    {
+        deviceTopology(macAddress: "AA:AA:AA:AA:AA:AA")
+    }
     ```
 

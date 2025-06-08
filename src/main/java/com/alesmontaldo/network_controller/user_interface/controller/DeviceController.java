@@ -28,7 +28,7 @@ public class DeviceController {
     }
 
     @QueryMapping
-    public Object subtree(@Argument MacAddress macAddress) {
+    public Object deviceTopology(@Argument MacAddress macAddress) {
         Device device = deviceService.getSubtree(macAddress);
         if (device == null) {
             return null;
@@ -36,7 +36,7 @@ public class DeviceController {
         
         //return convertDeviceToMap(device);
         Map<String, Object> result = new HashMap<>();
-        result.put("subtree", device);
+        result.put("Device Topology", device);
         return result;
     }
 
