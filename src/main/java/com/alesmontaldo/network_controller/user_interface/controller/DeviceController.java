@@ -41,13 +41,9 @@ public class DeviceController {
     }
 
     @MutationMapping
-    public Object addDevice(@Argument("input") Map<String, Object> input) {
+    public Object addDevice(@Argument("input") DeviceInput deviceInput) {
         try {
-            MacAddress mac = (MacAddress) input.get("macAddress");
-            MacAddress uplinkMac = (MacAddress) input.get("uplinkMacAddress");
-            DeviceType deviceType = DeviceType.valueOf((String) input.get("deviceType"));
-
-            return deviceService.addDevice(mac, uplinkMac, deviceType);
+            return deviceService.addDevice(deviceInput.getMacAddress(), deviceInput.getUplinkMacAddress(), deviceInput.getDeviceType());
         } catch (ValidationException e) {
             log.warn("Validation error when adding device: " + e.getMessage());
             return new ValidationError(e.getMessage());
