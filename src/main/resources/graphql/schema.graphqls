@@ -2,9 +2,9 @@
 
 type Query {
     allDevicesSorted: [Device!]!
-    deviceByMac(mac: MacAddress): Device
+    deviceByMac(macAddress: MacAddress): Device
     fullTopology: Device
-    subtree(mac: MacAddress): JSON
+    subtree(macAddress: MacAddress): JSON
 }
 
 type Mutation {
@@ -23,28 +23,28 @@ enum DeviceType {
 }
 
 interface Device {
-    mac: MacAddress!
+    macAddress: MacAddress!
     uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Gateway implements Device {
-    mac: MacAddress!
+    macAddress: MacAddress!
     uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Switch implements Device {
-    mac: MacAddress!
+    macAddress: MacAddress!
     uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type AccessPoint implements Device {
-    mac: MacAddress!
+    macAddress: MacAddress!
     uplinkMac: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
@@ -53,7 +53,7 @@ type AccessPoint implements Device {
 # --------- Mutation Input types
 
 input DeviceInput {
-    mac: MacAddress!
+    macAddress: MacAddress!
     uplinkMac: MacAddress
     deviceType: DeviceType!
 }

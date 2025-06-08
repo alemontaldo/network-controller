@@ -13,10 +13,10 @@ public class AccessPointDocument extends DeviceDocument {
         setDeviceType(DeviceType.ACCESS_POINT);
     }
 
-    public AccessPointDocument(MacAddress mac,
+    public AccessPointDocument(MacAddress macAddress,
                                MacAddress uplinkMac,
                                DeviceType deviceType) {
-        super(mac, uplinkMac, deviceType);
+        super(macAddress, uplinkMac, deviceType);
         setDeviceType(DeviceType.ACCESS_POINT);
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public abstract class DeviceDocument {
 
     @Id
-    protected MacAddress mac;
+    protected MacAddress macAddress;
     protected MacAddress uplinkMac;
     protected DeviceType deviceType;
 
@@ -28,20 +28,20 @@ public abstract class DeviceDocument {
     public DeviceDocument() {
     }
 
-    public DeviceDocument(MacAddress mac,
+    public DeviceDocument(MacAddress macAddress,
                           MacAddress uplinkMac,
                           DeviceType deviceType) {
-        this.mac = mac;
+        this.macAddress = macAddress;
         this.uplinkMac = uplinkMac;
         this.deviceType = deviceType;
     }
 
-    public MacAddress getMac() {
-        return mac;
+    public MacAddress getMacAddress() {
+        return macAddress;
     }
 
-    public void setMac(MacAddress mac) {
-        this.mac = mac;
+    public void setMacAddress(MacAddress mac) {
+        this.macAddress = mac;
     }
 
     public MacAddress getUplinkMac() {

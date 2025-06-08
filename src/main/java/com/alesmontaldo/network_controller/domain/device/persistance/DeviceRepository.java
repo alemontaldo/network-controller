@@ -49,7 +49,7 @@ public abstract class DeviceRepository {
     public abstract Optional<Device> fetchSubtree(MacAddress rootMac);
 
     protected void validateEventualNewCycle(Device device) {
-        MacAddress mac = device.getMac();
+        MacAddress mac = device.getMacAddress();
         MacAddress uplinkMac = device.getUplinkMac();
 
         if (uplinkMac != null) {

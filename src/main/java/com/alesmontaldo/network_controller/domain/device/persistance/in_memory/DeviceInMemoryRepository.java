@@ -41,7 +41,7 @@ public class DeviceInMemoryRepository extends DeviceRepository {
             log.info("Adding new device: " + device);
             // Create a deep copy to avoid reference issues
             Device savedDevice = cloneDevice(device);
-            devices.put(device.getMac(), savedDevice);
+            devices.put(device.getMacAddress(), savedDevice);
             return savedDevice;
         }
     }
@@ -75,7 +75,7 @@ public class DeviceInMemoryRepository extends DeviceRepository {
         // Find direct children of this device
         List<Device> directChildren = allDevices.stream()
                 .filter(child -> child.getUplinkMac() != null && 
-                       child.getUplinkMac().equals(device.getMac()))
+                       child.getUplinkMac().equals(device.getMacAddress()))
                 .map(child -> buildDeviceHierarchy(child, allDevices)) // Recursively build each child's hierarchy
                 .collect(Collectors.toList());
         
@@ -106,19 +106,19 @@ public class DeviceInMemoryRepository extends DeviceRepository {
     private Device createDeviceWithChildren(Device device, List<Device> children) {
         return switch (device.getDeviceType()) {
             case GATEWAY -> new Gateway(
-                    device.getMac(),
+                    device.getMacAddress(),
                     device.getUplinkMac(),
                     DeviceType.GATEWAY,
                     children
             );
             case SWITCH -> new Switch(
-                    device.getMac(),
+                    device.getMacAddress(),
                     device.getUplinkMac(),
                     DeviceType.SWITCH,
                     children
             );
             case ACCESS_POINT -> new AccessPoint(
-                    device.getMac(),
+                    device.getMacAddress(),
                     device.getUplinkMac(),
                     DeviceType.ACCESS_POINT,
                     children

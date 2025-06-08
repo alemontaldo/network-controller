@@ -70,7 +70,7 @@ public class DeviceController {
 //        }
 //
 //        Map<String, Object> result = new HashMap<>();
-//        result.put("mac", device.getMac().getValue());
+//        result.put("mac", device.getMacAddress().getValue());
 //        result.put("deviceType", device.getDeviceType().toString());
 //
 //        if (device.getUplinkMac() != null) {

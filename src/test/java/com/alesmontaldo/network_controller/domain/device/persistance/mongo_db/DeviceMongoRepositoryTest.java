@@ -3,6 +3,8 @@ package com.alesmontaldo.network_controller.domain.device.persistance.mongo_db;
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("test")
 public class DeviceMongoRepositoryTest {
+
+    private static final Log log = LogFactory.getLog(DeviceMongoRepositoryTest.class);
 
     @Autowired
     private DeviceRepository deviceRepository;
@@ -33,7 +37,7 @@ public class DeviceMongoRepositoryTest {
 
         // Create and save a test device
         testGateway = new GatewayDocument();
-        testGateway.setMac(new MacAddress("AA:BB:CC:DD:EE:FF"));
+        testGateway.setMacAddress(new MacAddress("AA:BB:CC:DD:EE:FF"));
         testGateway.setUplinkMac(null);
         testGateway.setDeviceType(DeviceType.GATEWAY);
         
@@ -48,14 +52,16 @@ public class DeviceMongoRepositoryTest {
 
     @Test
     void getDeviceById_shouldReturnDevice_whenDeviceExists() {
+        log.info("running getDeviceById_shouldReturnDevice_whenDeviceExists test");
+
         // Act
-        Optional<Device> result = deviceRepository.findById(testGateway.getMac());
+        Optional<Device> result = deviceRepository.findById(testGateway.getMacAddress());
 
         // Assert
         assertThat(result).isPresent();
         assertThat(result.get()).isInstanceOf(Gateway.class);
         Gateway gateway = (Gateway) result.get();
-        assertThat(gateway.getMac()).isEqualTo(new MacAddress("AA:BB:CC:DD:EE:FF"));
+        assertThat(gateway.getMacAddress()).isEqualTo(new MacAddress("AA:BB:CC:DD:EE:FF"));
     }
 
     @Test
@@ -71,21 +77,21 @@ public class DeviceMongoRepositoryTest {
     void getDeviceById_shouldReturnCorrectDeviceType() {
         // Arrange
         SwitchDocument switchDevice = new SwitchDocument();
-        switchDevice.setMac(new MacAddress("11:22:33:44:55:66"));
-        switchDevice.setUplinkMac(testGateway.getMac());
+        switchDevice.setMacAddress(new MacAddress("11:22:33:44:55:66"));
+        switchDevice.setUplinkMac(testGateway.getMacAddress());
         switchDevice.setDeviceType(DeviceType.SWITCH);
         switchDevice = mongoRepository.save(switchDevice);
 
         AccessPointDocument accessPoint = new AccessPointDocument();
-        accessPoint.setMac(new MacAddress("AA:BB:CC:11:22:33"));
-        accessPoint.setUplinkMac(switchDevice.getMac());
+        accessPoint.setMacAddress(new MacAddress("AA:BB:CC:11:22:33"));
+        accessPoint.setUplinkMac(switchDevice.getMacAddress());
         accessPoint.setDeviceType(DeviceType.ACCESS_POINT);
         accessPoint = mongoRepository.save(accessPoint);
 
         // Act
-        Optional<Device> gatewayResult = deviceRepository.findById(testGateway.getMac());
-        Optional<Device> switchResult = deviceRepository.findById(switchDevice.getMac());
-        Optional<Device> apResult = deviceRepository.findById(accessPoint.getMac());
+        Optional<Device> gatewayResult = deviceRepository.findById(testGateway.getMacAddress());
+        Optional<Device> switchResult = deviceRepository.findById(switchDevice.getMacAddress());
+        Optional<Device> apResult = deviceRepository.findById(accessPoint.getMacAddress());
 
         // Assert
         assertThat(gatewayResult).isPresent();

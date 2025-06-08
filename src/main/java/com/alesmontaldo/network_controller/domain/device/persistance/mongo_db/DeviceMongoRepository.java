@@ -120,7 +120,7 @@ public class DeviceMongoRepository extends DeviceRepository {
             return Optional.of(deviceMapper.toDevice(rootDevice));
         }
     }
-    
+
     /**
      * Recursively builds the device hierarchy by organizing the flat list of downlink devices
      * into a proper tree structure.
@@ -131,31 +131,31 @@ public class DeviceMongoRepository extends DeviceRepository {
             device.setDownlinkDevices(List.of());
             return;
         }
-        
+
         // Create a copy of the flat list of all descendants
         List<DeviceDocument> allDescendants = new ArrayList<>(device.getDownlinkDevices());
-        
+
         // Get all direct children of this device
         List<DeviceDocument> directChildren = allDescendants.stream()
-                .filter(child -> child.getUplinkMac() != null && 
-                       child.getUplinkMac().equals(device.getMac()))
+                .filter(child -> child.getUplinkMac() != null &&
+                       child.getUplinkMac().equals(device.getMacAddress()))
                 .collect(Collectors.toList());
-        
+
         // Set the direct children as the downlink devices
         device.setDownlinkDevices(directChildren);
-        
+
         // Recursively process each child, passing the complete list of descendants
         for (DeviceDocument child : directChildren) {
             // For each child, we need to build its own device hierarchy
 
             // we remove the child itself from the copy of the flat list of all descendants
             List<DeviceDocument> childDescendants = allDescendants.stream()
-                    .filter(descendant -> !descendant.getMac().equals(child.getMac()))
+                    .filter(descendant -> !descendant.getMacAddress().equals(child.getMacAddress()))
                     .collect(Collectors.toList());
-            
+
             // Set the potential descendants to the child
             child.setDownlinkDevices(childDescendants);
-            
+
             // Recursively build the hierarchy for this child
             buildDeviceHierarchy(child);
         }

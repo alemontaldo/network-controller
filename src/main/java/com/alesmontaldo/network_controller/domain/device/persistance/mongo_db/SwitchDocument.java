@@ -13,10 +13,10 @@ public class SwitchDocument extends DeviceDocument {
         setDeviceType(DeviceType.SWITCH);
     }
 
-    public SwitchDocument(MacAddress mac,
+    public SwitchDocument(MacAddress macAddress,
                           MacAddress uplinkMac,
                           DeviceType deviceType) {
-        super(mac, uplinkMac, deviceType);
+        super(macAddress, uplinkMac, deviceType);
         setDeviceType(DeviceType.SWITCH);
     }
 }
