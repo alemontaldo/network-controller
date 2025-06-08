@@ -96,15 +96,41 @@ at: http://localhost:8080/graphiql?path=/graphql
 4. Retrieving all registered network device topology
    output: `Device topology` as tree structure, node should be represented as `macAddress`
 
-   MISSING
+    ```graphql
+   {
+     fullTopology {
+       ... on JsonResult {
+         data
+       }
+       ... on ValidationError {
+         message
+       }
+       ... on ServerError {
+         message
+         errorCode
+       }
+     }
+   }
+    ```
 
 5. Retrieving network device topology starting from a specific device.
    input: `macAddress`
    output: `Device topology` where root node is device with matching macAddress 
 
     ```graphql
-    {
-        deviceTopology(macAddress: "AA:AA:AA:AA:AA:AA")
-    }
+   {
+     deviceTopology(macAddress: "AA:AA:AA:AA:AA:AA") {
+       ... on JsonResult {
+         data
+       }
+       ... on ValidationError {
+         message
+       }
+       ... on ServerError {
+         message
+         errorCode
+       }
+     }
+   }
     ```
 
