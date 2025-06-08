@@ -32,8 +32,8 @@ logging:
 ---
 spring:
   profiles:
-#    active: in-memory
-    active: mongo
+    active: in-memory
+#    active: mongo
 
 # TODO remove here
 #spring:

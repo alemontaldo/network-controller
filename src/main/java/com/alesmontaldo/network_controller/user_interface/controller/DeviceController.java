@@ -4,12 +4,9 @@ import com.alesmontaldo.network_controller.application.DeviceService;
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import jakarta.validation.ValidationException;
-import java.util.*;
 import java.util.ConcurrentModificationException;
-import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 

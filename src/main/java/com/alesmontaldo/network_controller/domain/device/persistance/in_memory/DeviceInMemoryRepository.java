@@ -64,11 +64,10 @@ public class DeviceInMemoryRepository extends DeviceRepository {
         }
         
         Device rootDevice = rootDeviceOpt.get();
-        
-        // Find all devices in the repository
+
+        // For this in memory repository we simply check all devices and use them all
+        // to build the device hierarchy
         List<Device> allDevices = new ArrayList<>(devices.values());
-        
-        // Build the device hierarchy using recursion and immutable objects
         return Optional.of(buildDeviceHierarchy(rootDevice, allDevices));
     }
     
