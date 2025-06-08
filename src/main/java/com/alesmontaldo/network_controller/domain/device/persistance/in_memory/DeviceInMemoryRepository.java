@@ -35,6 +35,10 @@ public class DeviceInMemoryRepository extends DeviceRepository {
     @Override
     public Device save(Device device) {
         synchronized(lockObject) {
+            if (devices.get(device.getMacAddress()) != null) {
+                throw new ValidationException("Device with Mac Address: " + device.getMacAddress() + " already exists");
+            }
+
             log.info("Validating device addition for an eventual new cycle for device: " + device);
             validateEventualNewCycle(device);
             
