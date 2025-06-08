@@ -23,13 +23,13 @@ public class DeviceController {
     }
 
     @QueryMapping
-    public Device deviceByMac(@Argument MacAddress mac) {
-        return deviceService.getDeviceByMac(mac);
+    public Device deviceByMac(@Argument MacAddress macAddress) {
+        return deviceService.getDeviceByMac(macAddress);
     }
 
     @QueryMapping
-    public Object subtree(@Argument MacAddress mac) {
-        Device device = deviceService.getSubtree(mac);
+    public Object subtree(@Argument MacAddress macAddress) {
+        Device device = deviceService.getSubtree(macAddress);
         if (device == null) {
             return null;
         }

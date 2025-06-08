@@ -83,7 +83,7 @@ at: http://localhost:8080/graphiql?path=/graphql
     
    ```graphql
     {
-      deviceByMac(macAddress: "AA:BB:CC:DD:EE:FF") {
+      deviceByMac(macAddress: "AA:AA:AA:AA:AA:AA") {
         macAddress
         uplinkMacAddress
         downlinkDevices {
