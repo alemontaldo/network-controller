@@ -1,8 +1,6 @@
 package com.alesmontaldo.network_controller.user_interface.configuration;
 
-import com.alesmontaldo.network_controller.codegen.types.Device;
-import com.alesmontaldo.network_controller.codegen.types.ServerError;
-import com.alesmontaldo.network_controller.codegen.types.ValidationError;
+import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.user_interface.scalar.MacAddressScalar;
 import graphql.scalars.ExtendedScalars;
 import org.springframework.context.annotation.Bean;
@@ -32,8 +30,12 @@ public class GraphQLConfig {
             wiringBuilder.type("AddDeviceResult", typeConfig -> typeConfig
                     .typeResolver(env -> {
                         Object result = env.getObject();
-                        if (result instanceof Device) {
-                            return env.getSchema().getObjectType("Device");
+                        if (result instanceof Gateway) {
+                            return env.getSchema().getObjectType("Gateway");
+                        } else if (result instanceof Switch) {
+                            return env.getSchema().getObjectType("Switch");
+                        } else if (result instanceof AccessPoint) {
+                            return env.getSchema().getObjectType("AccessPoint");
                         } else if (result instanceof ValidationError) {
                             return env.getSchema().getObjectType("ValidationError");
                         } else if (result instanceof ServerError) {

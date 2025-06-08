@@ -43,8 +43,8 @@ public class DeviceController {
     @MutationMapping
     public Object addDevice(@Argument("input") Map<String, Object> input) {
         try {
-            MacAddress mac = (MacAddress) input.get("mac");
-            MacAddress uplinkMac = (MacAddress) input.get("uplinkMac");
+            MacAddress mac = (MacAddress) input.get("macAddress");
+            MacAddress uplinkMac = (MacAddress) input.get("uplinkMacAddress");
             DeviceType deviceType = DeviceType.valueOf((String) input.get("deviceType"));
 
             return deviceService.addDevice(mac, uplinkMac, deviceType);
