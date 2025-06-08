@@ -33,6 +33,11 @@ public class DeviceInMemoryRepository extends DeviceRepository {
     }
 
     @Override
+    public List<Device> findAll() {
+        return devices.values().stream().toList();
+    }
+
+    @Override
     public Device save(Device device) {
         synchronized(lockObject) {
             if (devices.get(device.getMacAddress()) != null) {

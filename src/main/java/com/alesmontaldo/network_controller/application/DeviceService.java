@@ -7,10 +7,10 @@ import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
 import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.DeviceMongoRepository;
 import jakarta.validation.ValidationException;
-import jakarta.validation.constraints.NotNull;
 import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +79,7 @@ public class DeviceService {
      * @return The device with its subtree if found
      * @throws ValidationException if device could not be found
      */
+    @NotNull
     public Device getSubtree(MacAddress rootMac) {
         Optional<Device> fromDB = deviceRepository.fetchSubtree(rootMac);
         if (fromDB.isEmpty()) {
@@ -88,17 +89,32 @@ public class DeviceService {
         }
     }
 
+    @NotNull
+    public List<Object> getFullTopology() {
+        List<Device> allDevices = getAllDevices();
+
+        // Find root devices (those with no uplink)
+        List<Device> rootDevices = allDevices.stream()
+                .filter(device -> device.getUplinkMacAddress() == null)
+                .toList();
+
+        // Obtain the device topology for each root device
+        List<Object> forest = new ArrayList<>();
+        for (Device rootDevice : rootDevices) {
+            Device completeSubtree = getSubtree(rootDevice.getMacAddress());
+            forest.add(buildSimplifiedTopology(completeSubtree));
+        }
+
+        return forest;
+    }
+
     /**
      * Builds a simplified topology tree where each node is represented only by its MAC address.
      *
      * @param device The device to convert
      * @return A map representing the device topology
      */
-    public Map<String, Object> buildSimplifiedTopology(Device device) {
-        if (device == null) {
-            throw new ValidationException("Cannot build topology for null device");
-        }
-
+    public Map<String, Object> buildSimplifiedTopology(@NotNull Device device) {
         Map<String, Object> result = new HashMap<>();
 
         // Use the MAC address as the key, and a list of child devices as the value
@@ -120,5 +136,9 @@ public class DeviceService {
         }
 
         return result;
+    }
+
+    private List<Device> getAllDevices() {
+        return deviceRepository.findAll();
     }
 }

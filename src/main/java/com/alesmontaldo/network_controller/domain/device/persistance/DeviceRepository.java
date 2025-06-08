@@ -4,10 +4,7 @@ import com.alesmontaldo.network_controller.codegen.types.Device;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 
 import jakarta.validation.ValidationException;
-import java.util.ConcurrentModificationException;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 
@@ -24,7 +21,15 @@ public abstract class DeviceRepository {
      * @return An Optional containing the device if found, or empty if not found
      */
     public abstract Optional<Device> findById(MacAddress id);
-    
+
+    /**
+     * Finds all devices.
+     * It would be better to replace this approach with a pagination method instead.
+     *
+     * @return A list containing all the devices
+     */
+    public abstract List<Device> findAll();
+
     /**
      * Saves a device with topology consistency validation.
      * Implementations should ensure that adding the device won't create cycles in the network topology.

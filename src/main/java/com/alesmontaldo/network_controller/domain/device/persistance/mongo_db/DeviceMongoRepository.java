@@ -51,6 +51,11 @@ public class DeviceMongoRepository extends DeviceRepository {
         return deviceDocument.map(deviceMapper::toDevice);
     }
 
+    @Override
+    public List<Device> findAll() {
+        return mongoRepository.findAll().stream().map(deviceMapper::toDevice).toList();
+    }
+
     /**
      * Saves a device with distributed locking to ensure topology consistency.
      * Validates that adding the device won't create cycles in the network topology.

@@ -2,9 +2,9 @@
 
 type Query {
     allDevicesSorted: [Device!]!
-    deviceByMac(macAddress: MacAddress): Device
-    fullTopology: Device
-    deviceTopology(macAddress: MacAddress): JSON
+    deviceByMac(macAddress: MacAddress): Device #TODO improve error reporting
+    fullTopology: JSON #TODO improve error reporting
+    deviceTopology(macAddress: MacAddress): DeviceTopologyResult!
 }
 
 type Mutation {
@@ -74,3 +74,5 @@ type ServerError implements Error {
 }
 
 union AddDeviceResult = Gateway | Switch | AccessPoint | ValidationError | ServerError
+
+union DeviceTopologyResult = JSON | ValidationError | ServerError

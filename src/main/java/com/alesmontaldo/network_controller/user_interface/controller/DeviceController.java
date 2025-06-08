@@ -6,8 +6,10 @@ import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import jakarta.validation.ValidationException;
 import java.util.*;
 import java.util.ConcurrentModificationException;
+import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.graphql.data.method.annotation.*;
 import org.springframework.stereotype.Controller;
 
@@ -27,17 +29,6 @@ public class DeviceController {
         return deviceService.getDeviceByMac(macAddress);
     }
 
-    @QueryMapping
-    public Object deviceTopology(@Argument MacAddress macAddress) {
-        try {
-            Device device = deviceService.getSubtree(macAddress);
-            return deviceService.buildSimplifiedTopology(device);
-        } catch (ValidationException e) {
-            log.warn("Validation error when getting device topology: " + e.getMessage());
-            return new ValidationError(e.getMessage());
-        }
-    }
-
     @MutationMapping
     public Object addDevice(@Argument("input") DeviceInput deviceInput) {
         try {
@@ -51,6 +42,32 @@ public class DeviceController {
         } catch (Exception e) {
             log.error("Unexpected error when adding device", e);
             return new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
+        }
+    }
+
+    //TODO: discuss limitations of this approach
+    @QueryMapping
+    public Object deviceTopology(@Argument MacAddress macAddress) {
+        try {
+            Device device = deviceService.getSubtree(macAddress);
+            return deviceService.buildSimplifiedTopology(device);
+        } catch (ValidationException e) {
+            log.warn("Validation error when getting device topology: " + e.getMessage());
+            return new ValidationError(e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected error when getting device topology for mac address:" + macAddress);
+            return new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
+        }
+    }
+
+    //TODO: discuss limitations of this approach
+    @QueryMapping
+    public Object fullTopology() {
+        try {
+            return deviceService.getFullTopology();
+        } catch (Exception e) {
+            log.error("Error retrieving full topology", e);
+            return new ServerError("Failed to retrieve network topology: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
         }
     }
 }
