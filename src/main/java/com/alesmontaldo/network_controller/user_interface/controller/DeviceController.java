@@ -73,8 +73,8 @@ public class DeviceController {
 //        result.put("mac", device.getMacAddress().getValue());
 //        result.put("deviceType", device.getDeviceType().toString());
 //
-//        if (device.getUplinkMac() != null) {
-//            result.put("uplinkMac", device.getUplinkMac().getValue());
+//        if (device.getUplinkMacAddress() != null) {
+//            result.put("uplinkMac", device.getUplinkMacAddress().getValue());
 //        } else {
 //            result.put("uplinkMac", null);
 //        }

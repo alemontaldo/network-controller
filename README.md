@@ -43,20 +43,20 @@ at: http://localhost:8080/graphiql?path=/graphql
     ```graphql
     mutation {
         addDevice(
-            input: {deviceType: ACCESS_POINT, mac: "BB:BB:BB:BB:BB:BB", uplinkMac: "AA:AA:AA:AA:AA:AA"}
+            input: {deviceType: ACCESS_POINT, macAddress: "BB:BB:BB:BB:BB:BB", uplinkMac: "AA:AA:AA:AA:AA:AA"}
         ) {
             ... on Gateway {
-                mac
+                macAddress
                 uplinkMac
                 deviceType
             }
             ... on Switch {
-                mac
+                macAddress
                 uplinkMac
                 deviceType
             }
             ... on AccessPoint {
-                mac
+                macAddress
                 uplinkMac
                 deviceType
             }
@@ -83,11 +83,11 @@ at: http://localhost:8080/graphiql?path=/graphql
     
    ```graphql
     {
-      deviceByMac(mac: "AA:BB:CC:DD:EE:FF") {
-        mac
+      deviceByMac(macAddress: "AA:BB:CC:DD:EE:FF") {
+        macAddress
         uplinkMac
         downlinkDevices {
-          mac
+          macAddress
         }
       }
     }
@@ -103,6 +103,6 @@ at: http://localhost:8080/graphiql?path=/graphql
    output: `Device topology` where root node is device with matching macAddress 
 
     ```graphql
-    {subtree(mac: "AA:AA:AA:AA:AA:AA")}
+    {subtree(macAddress: "AA:AA:AA:AA:AA:AA")}
     ```
 

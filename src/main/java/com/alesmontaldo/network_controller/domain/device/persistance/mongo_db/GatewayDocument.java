@@ -16,9 +16,9 @@ public class GatewayDocument extends DeviceDocument {
     }
 
     public GatewayDocument(MacAddress macAddress,
-                           MacAddress uplinkMac,
+                           MacAddress uplinkMacAddress,
                            DeviceType deviceType) {
-        super(macAddress, uplinkMac, deviceType);
+        super(macAddress, uplinkMacAddress, deviceType);
         setDeviceType(GATEWAY);
     }
 }

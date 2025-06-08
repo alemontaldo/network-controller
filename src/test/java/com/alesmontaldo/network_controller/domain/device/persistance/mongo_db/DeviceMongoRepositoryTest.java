@@ -38,7 +38,7 @@ public class DeviceMongoRepositoryTest {
         // Create and save a test device
         testGateway = new GatewayDocument();
         testGateway.setMacAddress(new MacAddress("AA:BB:CC:DD:EE:FF"));
-        testGateway.setUplinkMac(null);
+        testGateway.setUplinkMacAddress(null);
         testGateway.setDeviceType(DeviceType.GATEWAY);
         
         testGateway = mongoRepository.save(testGateway);
@@ -78,13 +78,13 @@ public class DeviceMongoRepositoryTest {
         // Arrange
         SwitchDocument switchDevice = new SwitchDocument();
         switchDevice.setMacAddress(new MacAddress("11:22:33:44:55:66"));
-        switchDevice.setUplinkMac(testGateway.getMacAddress());
+        switchDevice.setUplinkMacAddress(testGateway.getMacAddress());
         switchDevice.setDeviceType(DeviceType.SWITCH);
         switchDevice = mongoRepository.save(switchDevice);
 
         AccessPointDocument accessPoint = new AccessPointDocument();
         accessPoint.setMacAddress(new MacAddress("AA:BB:CC:11:22:33"));
-        accessPoint.setUplinkMac(switchDevice.getMacAddress());
+        accessPoint.setUplinkMacAddress(switchDevice.getMacAddress());
         accessPoint.setDeviceType(DeviceType.ACCESS_POINT);
         accessPoint = mongoRepository.save(accessPoint);
 

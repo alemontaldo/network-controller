@@ -74,8 +74,8 @@ public class DeviceInMemoryRepository extends DeviceRepository {
     private Device buildDeviceHierarchy(Device device, List<Device> allDevices) {
         // Find direct children of this device
         List<Device> directChildren = allDevices.stream()
-                .filter(child -> child.getUplinkMac() != null && 
-                       child.getUplinkMac().equals(device.getMacAddress()))
+                .filter(child -> child.getUplinkMacAddress() != null && 
+                       child.getUplinkMacAddress().equals(device.getMacAddress()))
                 .map(child -> buildDeviceHierarchy(child, allDevices)) // Recursively build each child's hierarchy
                 .collect(Collectors.toList());
         
@@ -107,19 +107,19 @@ public class DeviceInMemoryRepository extends DeviceRepository {
         return switch (device.getDeviceType()) {
             case GATEWAY -> new Gateway(
                     device.getMacAddress(),
-                    device.getUplinkMac(),
+                    device.getUplinkMacAddress(),
                     DeviceType.GATEWAY,
                     children
             );
             case SWITCH -> new Switch(
                     device.getMacAddress(),
-                    device.getUplinkMac(),
+                    device.getUplinkMacAddress(),
                     DeviceType.SWITCH,
                     children
             );
             case ACCESS_POINT -> new AccessPoint(
                     device.getMacAddress(),
-                    device.getUplinkMac(),
+                    device.getUplinkMacAddress(),
                     DeviceType.ACCESS_POINT,
                     children
             );

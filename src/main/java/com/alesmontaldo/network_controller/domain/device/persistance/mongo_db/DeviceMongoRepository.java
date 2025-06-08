@@ -137,8 +137,8 @@ public class DeviceMongoRepository extends DeviceRepository {
 
         // Get all direct children of this device
         List<DeviceDocument> directChildren = allDescendants.stream()
-                .filter(child -> child.getUplinkMac() != null &&
-                       child.getUplinkMac().equals(device.getMacAddress()))
+                .filter(child -> child.getUplinkMacAddress() != null &&
+                       child.getUplinkMacAddress().equals(device.getMacAddress()))
                 .collect(Collectors.toList());
 
         // Set the direct children as the downlink devices

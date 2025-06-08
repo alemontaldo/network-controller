@@ -24,28 +24,28 @@ enum DeviceType {
 
 interface Device {
     macAddress: MacAddress!
-    uplinkMac: MacAddress
+    uplinkMacAddress: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Gateway implements Device {
     macAddress: MacAddress!
-    uplinkMac: MacAddress
+    uplinkMacAddress: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type Switch implements Device {
     macAddress: MacAddress!
-    uplinkMac: MacAddress
+    uplinkMacAddress: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
 
 type AccessPoint implements Device {
     macAddress: MacAddress!
-    uplinkMac: MacAddress
+    uplinkMacAddress: MacAddress
     deviceType: DeviceType!
     downlinkDevices: [Device!]!
 }
@@ -54,7 +54,7 @@ type AccessPoint implements Device {
 
 input DeviceInput {
     macAddress: MacAddress!
-    uplinkMac: MacAddress
+    uplinkMacAddress: MacAddress
     deviceType: DeviceType!
 }
 

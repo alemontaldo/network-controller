@@ -29,10 +29,10 @@ public abstract class DeviceDocument {
     }
 
     public DeviceDocument(MacAddress macAddress,
-                          MacAddress uplinkMac,
+                          MacAddress uplinkMacAddress,
                           DeviceType deviceType) {
         this.macAddress = macAddress;
-        this.uplinkMac = uplinkMac;
+        this.uplinkMac = uplinkMacAddress;
         this.deviceType = deviceType;
     }
 
@@ -44,11 +44,11 @@ public abstract class DeviceDocument {
         this.macAddress = mac;
     }
 
-    public MacAddress getUplinkMac() {
+    public MacAddress getUplinkMacAddress() {
         return uplinkMac;
     }
 
-    public void setUplinkMac(MacAddress uplinkMac) {
+    public void setUplinkMacAddress(MacAddress uplinkMac) {
         this.uplinkMac = uplinkMac;
     }
 

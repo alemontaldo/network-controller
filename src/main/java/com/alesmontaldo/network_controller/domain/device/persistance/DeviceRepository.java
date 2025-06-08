@@ -50,7 +50,7 @@ public abstract class DeviceRepository {
 
     protected void validateEventualNewCycle(Device device) {
         MacAddress mac = device.getMacAddress();
-        MacAddress uplinkMac = device.getUplinkMac();
+        MacAddress uplinkMac = device.getUplinkMacAddress();
 
         if (uplinkMac != null) {
             Optional<Device> uplinkDevice = findById(uplinkMac);
@@ -93,7 +93,7 @@ public abstract class DeviceRepository {
             }
 
             // Move to the uplink device
-            currentMac = currentDevice.get().getUplinkMac();
+            currentMac = currentDevice.get().getUplinkMacAddress();
         }
 
         return false;
