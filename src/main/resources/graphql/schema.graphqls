@@ -2,7 +2,8 @@
 
 type Query {
     getDevice(macAddress: MacAddress!): GetDeviceResult!
-    allDevicesSorted: [Device!]!
+#    allDevicesSorted: [GetDeviceResult!]!
+    allDevicesSorted: [DeviceResultView!]!
     fullTopology: DeviceTopologyResult!
     deviceTopology(macAddress: MacAddress!): DeviceTopologyResult!
 }

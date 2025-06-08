@@ -75,7 +75,16 @@ at: http://localhost:8080/graphiql?path=/graphql
    output: sorted list of devices, where each entry has `deviceType` and `macAddress` 
    (sorting order: `Gateway` > `Switch` > `Access Point`)
 
-   MISSING
+   ```graphql
+   {
+     allDevicesSorted {
+       ... on DeviceResultView {
+         macAddress
+         deviceType
+       }
+     }
+   }
+   ```
 
 3. Retrieving network deployment device by MAC address:
    input: `macAddress`

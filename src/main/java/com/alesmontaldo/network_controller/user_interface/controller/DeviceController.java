@@ -5,6 +5,7 @@ import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import jakarta.validation.ValidationException;
 import java.util.ConcurrentModificationException;
+import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.graphql.data.method.annotation.*;
@@ -33,6 +34,17 @@ public class DeviceController {
         } catch (Exception e) {
             log.error("Unexpected error when getting device for mac address:" + macAddress);
             return new ServerError("An unexpected error occurred: " + e.getMessage(), "INTERNAL_SERVER_ERROR");
+        }
+    }
+
+    @QueryMapping
+    public List<DeviceResultView> allDevicesSorted() {
+        try {
+            return deviceService.getAllDevicesSorted();
+        } catch (Exception e) {
+            //TODO implement better error handling
+            log.error("Error retrieving sorted devices", e);
+            throw new RuntimeException("Failed to retrieve sorted devices: " + e.getMessage());
         }
     }
 

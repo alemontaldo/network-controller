@@ -8,6 +8,7 @@ import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepos
 import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.DeviceMongoRepository;
 import jakarta.validation.ValidationException;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +47,26 @@ public class DeviceService {
         }
         log.info("Found device: " + fromDb);
         return fromDb.get();
+    }
+
+    public List<DeviceResultView> getAllDevicesSorted() {
+        List<Device> allDevices = deviceRepository.findAll();
+
+        return allDevices.stream()
+                .sorted((d1, d2) -> {
+                    Map<DeviceType, Integer> typeOrder = Map.of(
+                            DeviceType.GATEWAY, 0,
+                            DeviceType.SWITCH, 1,
+                            DeviceType.ACCESS_POINT, 2
+                    );
+
+                    return Integer.compare(
+                            typeOrder.getOrDefault(d1.getDeviceType(), Integer.MAX_VALUE),
+                            typeOrder.getOrDefault(d2.getDeviceType(), Integer.MAX_VALUE)
+                    );
+                })
+                .map(device -> new DeviceResultView(device.getMacAddress(), device.getDeviceType()))
+                .collect(Collectors.toList());
     }
 
     /**
