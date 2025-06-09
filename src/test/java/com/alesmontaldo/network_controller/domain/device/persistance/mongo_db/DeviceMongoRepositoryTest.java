@@ -17,7 +17,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles("test")
 public class DeviceMongoRepositoryTest {
 
     private static final Log log = LogFactory.getLog(DeviceMongoRepositoryTest.class);

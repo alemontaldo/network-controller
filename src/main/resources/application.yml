@@ -11,11 +11,6 @@ spring:
       password: supersecret
       authentication-database: admin
 
-  #TODO: keep?
-  threads:
-    virtual:
-      enabled: true
-
   graphql:
     graphiql:
       enabled: true
