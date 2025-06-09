@@ -2,9 +2,6 @@ spring:
   application:
     name: "network-controller"
 
-  profiles:
-    active: default
-
   data:
     mongodb:
       host: localhost
@@ -28,16 +25,3 @@ logging:
     com.alesmontaldo.network_controller: DEBUG
     org.springframework.graphql: DEBUG
     org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer: TRACE
-
----
-spring:
-  profiles:
-#    active: in-memory
-    active: mongo
-
-# TODO remove here
-#spring:
-#  config:
-#    activate:
-#      on-profile: in-memory
-  # No MongoDB configuration needed for in-memory profile

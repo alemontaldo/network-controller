@@ -1,44 +1,79 @@
-# Network controller
+# Network Controller
 
-## introduction
+A GraphQL API for managing network device deployment with support for various device types and hierarchical relationships.
+A network deployments may consist of various networking devices (Gateways, Switches, and Access Points).
+Through the API the user can register devices, query devices and network topology all while the network controller
+ensures the integrity of the network structure.
 
+## Features
 
-## assignment description
+- Register networking devices (Gateways, Switches, Access Points) to a network deployment
+- Retrieve all registered devices sorted by device type
+- Look up specific devices by MAC address
+- View the complete network topology as a forest of trees structure
+- View subtrees of the network starting from any device
 
+## Network Topology Rules
 
-## Details about this implementation
+This implementation enforces a strict acyclic topology. Devices cannot uplink to their descendants or create cycles in the network structure. 
+More precisely, the network can be thought of as a forest of trees because devices can be unconnected and multiple unconnected 
+regions of networks are allowed.
 
-This implementation enforces a strict acyclic topology.
-Devices cannot uplink to their descendants or create cycles in the network structure.
-More precisely the network can be though as a forest of trees
-(devices can be unconnected and multiple unconnected regions of networks are allowed).
+## Technology Stack
 
-two implementations are available for persistence:
-- in memory storage (use spring profile active: in-memory)
-- mongo DB (recommended. there is a docker compose for that)
+- Java 21
+- Spring Boot
+- GraphQL
+- MongoDB for persistence
 
-## Run the application
+## Persistence Options
 
-if you want to run the app with MongoDB storage, deploy localstack:
+Two implementations are available for persistence:
+- **In-memory storage**: Use Spring profile `in-memory`
+- **MongoDB**: (Docker Compose configuration provided)
+
+## Running the Application
+
+### Prerequisites
+
+- Java 21 or higher
+- (Optional) Docker and Docker Compose for MongoDB
+
+### Setup MongoDB (Recommended)
+
+Deploy the MongoDB container using Docker Compose:
 
 ```bash
 (cd localstack && docker compose up -d)
 ```
 
-this will create two containers:
-1. MongoDB
-2. Mongo Express (a MongoDB GUI that will be available at: http://localhost:8081/
+This will create two containers:
+1. **MongoDB**: The database server
+2. **Mongo Express**: A MongoDB GUI available at http://localhost:8081/
 
-for development, run the app with:
+### Running the Application
+
+For development with MongoDB:
+
 ```bash
-
+./gradlew bootRun
 ```
 
-After starting the app a GraphQL client is available at: http://localhost:8080/graphiql?path=/graphql
+For in-memory storage:
 
-## Queries and mutations available
+```bash
+./gradlew bootRun --args='--spring.profiles.active=in-memory'
+```
 
-1. Registering a device to a network deployment:
+After starting the app, a GraphQL client is available at: http://localhost:8080/graphiql?path=/graphql
+
+## API Documentation
+
+### GraphQL Schema
+
+The API provides the following operations:
+
+1. **Registering a device to a network deployment:**
    input: `deviceType`, `macAddress`, `uplinkMacAddress`
     
     ```graphql
@@ -72,7 +107,7 @@ After starting the app a GraphQL client is available at: http://localhost:8080/g
     }
     ```
 
-2. Retrieving all registered devices, sorted by `deviceType`
+2. **Retrieving all registered devices, sorted by `deviceType`**
    output: sorted list of devices, where each entry has `deviceType` and `macAddress` 
    (sorting order: `Gateway` > `Switch` > `Access Point`)
 
@@ -91,7 +126,7 @@ After starting the app a GraphQL client is available at: http://localhost:8080/g
    }
    ```
 
-3. Retrieving network deployment device by MAC address:
+3. **Retrieving network deployment device by MAC address:**
    input: `macAddress`
    output: Device entry, which consists of `deviceType` and `macAddress`
     
@@ -113,7 +148,7 @@ After starting the app a GraphQL client is available at: http://localhost:8080/g
    }
     ```
 
-4. Retrieving all registered network device topology
+4. **Retrieving all registered network device topology**
    output: `Device topology` as tree structure, node should be represented as `macAddress`
 
     ```graphql
@@ -133,7 +168,7 @@ After starting the app a GraphQL client is available at: http://localhost:8080/g
    }
     ```
 
-5. Retrieving network device topology starting from a specific device.
+5. **Retrieving network device topology starting from a specific device.**
    input: `macAddress`
    output: `Device topology` where root node is device with matching macAddress 
 
@@ -154,3 +189,49 @@ After starting the app a GraphQL client is available at: http://localhost:8080/g
    }
     ```
 
+## Error Handling
+
+The API uses union types to provide detailed error information:
+
+- **ValidationError**: Returned when input validation fails (e.g., invalid MAC address, non-existent uplink device)
+- **ServerError**: Returned for internal server errors with an error code
+
+## Implementation Details
+
+- **Concurrency Control**: Uses distributed locking to prevent race conditions when modifying the network topology.
+  The primary concern there is to prevent cycles in the network topology. For the Mongo DB persistence the lock is 
+  achieved with a lock with set TTL stored in DB that needs to be acquired before updating the topology. 
+  In the in-memory implementation the lock is simply a JVM synchronization block. 
+- **Retry Mechanism**: Implements Spring Retry for handling concurrent modification exceptions
+- **JSON Representation**: Uses GraphQL JSON scalar for representing complex tree structures
+- The repository aims to be structured following the Domain Driven Design principles.
+
+## Building and Testing
+
+Build the project:
+
+```bash
+./gradlew clean build
+```
+
+Run tests:
+
+```bash
+./gradlew test
+```
+
+## Database Management
+
+To reset the database and start fresh:
+
+```bash
+docker volume rm localstack_mongodb_data
+```
+
+## License
+
+[MIT License](LICENSE)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
