@@ -39,7 +39,7 @@ Two implementations are available for persistence:
 - Java 21 or higher
 - (Optional) Docker and Docker Compose for MongoDB
 
-### Setup MongoDB (Recommended)
+### Setup MongoDB (optional but recommended)
 
 Deploy the MongoDB container using Docker Compose:
 
@@ -53,19 +53,30 @@ This will create two containers:
 
 ### Running the Application
 
-For development with MongoDB:
+If you started the localstack, run the app with MongoDB this way:
 
 ```bash
 ./gradlew bootRun
 ```
 
-For in-memory storage:
+If you prefer instead the in-memory storage:
 
 ```bash
 ./gradlew bootRun --args='--spring.profiles.active=in-memory'
 ```
 
 After starting the app, a GraphQL client is available at: http://localhost:8080/graphiql?path=/graphql
+
+Note: the app can be compiled to native executable 
+(faster startup, smaller memory footprint). You can generate the executable with:
+
+```bash
+./gradlew clean nativeCompile
+```
+
+this will generate an executable at: build/native/nativeCompile/network-controller
+that you can simply execute from your terminal.
+
 
 ## API Documentation
 
@@ -205,6 +216,7 @@ The API uses union types to provide detailed error information:
 - **Retry Mechanism**: Implements Spring Retry for handling concurrent modification exceptions
 - **JSON Representation**: Uses GraphQL JSON scalar for representing complex tree structures
 - The repository aims to be structured following the Domain Driven Design principles.
+- The code is provided with needed hints to support native compilation with GraalVM
 
 ## Building and Testing
 
@@ -222,11 +234,13 @@ Run tests:
 
 ## Database Management
 
-To reset the database and start fresh:
+To reset the database and start fresh I recommend shutting down the local stack, then:
 
 ```bash
 docker volume rm localstack_mongodb_data
 ```
+
+and starting back on the localstack
 
 ## License
 

@@ -1,10 +1,15 @@
 package com.alesmontaldo.network_controller.user_interface.configuration;
 
 import com.alesmontaldo.network_controller.codegen.types.*;
+import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.user_interface.scalar.MacAddressScalar;
 import graphql.scalars.ExtendedScalars;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.graphql.execution.RuntimeWiringConfigurer;
 
 /**
@@ -12,6 +17,7 @@ import org.springframework.graphql.execution.RuntimeWiringConfigurer;
  * Registers custom scalars, type resolvers, and other GraphQL configurations.
  */
 @Configuration
+@ImportRuntimeHints(GraphQLConfig.GraphQLRuntimeHints.class)
 public class GraphQLConfig {
 
     /**
@@ -70,5 +76,24 @@ public class GraphQLConfig {
                         return null;
                     }));
         };
+    }
+
+    // Hints for types are required for native java compilation
+    static class GraphQLRuntimeHints implements RuntimeHintsRegistrar {
+        @Override
+        public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+            hints.reflection().registerType(MacAddress.class, MemberCategory.values());
+            hints.reflection().registerType(Device.class, MemberCategory.values());
+            hints.reflection().registerType(Gateway.class, MemberCategory.values());
+            hints.reflection().registerType(AccessPoint.class, MemberCategory.values());
+            hints.reflection().registerType(Switch.class, MemberCategory.values());
+            hints.reflection().registerType(ValidationError.class, MemberCategory.values());
+            hints.reflection().registerType(ServerError.class, MemberCategory.values());
+            hints.reflection().registerType(JsonResult.class, MemberCategory.values());
+            hints.reflection().registerType(GetDeviceResult.class, MemberCategory.values());
+            hints.reflection().registerType(DeviceResultView.class, MemberCategory.values());
+            hints.reflection().registerType(AddDeviceResult.class, MemberCategory.values());
+            hints.reflection().registerType(DeviceTopologyResult.class, MemberCategory.values());
+        }
     }
 }

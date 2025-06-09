@@ -37,7 +37,6 @@ public class DeviceController {
         }
     }
 
-    //TODO: discuss limitations of this approach
     @QueryMapping
     public List<? extends GetDeviceResult> allDevicesSorted() {
         try {
@@ -64,7 +63,6 @@ public class DeviceController {
         }
     }
 
-    //TODO: discuss limitations of this approach
     @QueryMapping
     public DeviceTopologyResult fullTopology() {
         try {
@@ -75,7 +73,6 @@ public class DeviceController {
         }
     }
 
-    //TODO: discuss limitations of this approach
     @QueryMapping
     public DeviceTopologyResult deviceTopology(@Argument MacAddress macAddress) {
         try {
