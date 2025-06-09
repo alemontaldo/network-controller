@@ -1,8 +1,12 @@
 package com.alesmontaldo.network_controller.domain.device;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+@JsonSerialize(using = MacAddressJsonConverter.MacAddressSerializer.class)
+@JsonDeserialize(using = MacAddressJsonConverter.MacAddressDeserializer.class)
 public class MacAddress {
     private final String value;
 

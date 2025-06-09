@@ -1,0 +1,12 @@
+query AllDevicesSorted {
+    allDevicesSorted {
+        ... on DeviceResultView {
+            macAddress
+            deviceType
+        }
+        ... on ServerError {
+            message
+            errorCode
+        }
+    }
+}

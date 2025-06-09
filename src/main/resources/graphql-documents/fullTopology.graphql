@@ -1,0 +1,14 @@
+query FullTopology {
+    fullTopology {
+        ... on JsonResult {
+            data
+        }
+        ... on ValidationError {
+            message
+        }
+        ... on ServerError {
+            message
+            errorCode
+        }
+    }
+}

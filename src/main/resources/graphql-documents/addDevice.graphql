@@ -1,0 +1,26 @@
+mutation AddDevice($input: DeviceInput!) {
+    addDevice(input: $input) {
+        ... on Gateway {
+            macAddress
+            uplinkMacAddress
+            deviceType
+        }
+        ... on Switch {
+            macAddress
+            uplinkMacAddress
+            deviceType
+        }
+        ... on AccessPoint {
+            macAddress
+            uplinkMacAddress
+            deviceType
+        }
+        ... on ValidationError {
+            message
+        }
+        ... on ServerError {
+            message
+            errorCode
+        }
+    }
+}

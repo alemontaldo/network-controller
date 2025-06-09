@@ -86,119 +86,53 @@ The API provides the following operations:
 
 1. **Registering a device to a network deployment:**
    input: `deviceType`, `macAddress`, `uplinkMacAddress`
-    
-    ```graphql
-    mutation {
-        addDevice(
-            input: {deviceType: ACCESS_POINT, macAddress: "BB:BB:BB:BB:BB:BB", uplinkMacAddress: "AA:AA:AA:AA:AA:AA"}
-        ) {
-            ... on Gateway {
-                macAddress
-                uplinkMacAddress
-                deviceType
-            }
-            ... on Switch {
-                macAddress
-                uplinkMacAddress
-                deviceType
-            }
-            ... on AccessPoint {
-                macAddress
-                uplinkMacAddress
-                deviceType
-            }
-            ... on ValidationError {
-                message
-            }
-            ... on ServerError {
-                message
-                errorCode
-            }
-        }
-    }
-    ```
+
+   query at: [addDevice](src/main/resources/graphql-documents/addDevice.graphql)
+   
+   with input e.g:
+   ```json
+   {
+       "input": {"macAddress": "AA:AA:AA:AA:AA:AA", "deviceType": "GATEWAY"}
+   }
+   ```
 
 2. **Retrieving all registered devices, sorted by `deviceType`**
    output: sorted list of devices, where each entry has `deviceType` and `macAddress` 
    (sorting order: `Gateway` > `Switch` > `Access Point`)
 
-   ```graphql
-   {
-      allDevicesSorted {
-         ... on DeviceResultView {
-            macAddress
-            deviceType
-         }
-         ... on ServerError {
-            message
-            errorCode
-         }
-      }
-   }
-   ```
+   query at: [allDevicesSorted](src/main/resources/graphql-documents/allDevicesSorted.graphql)
 
 3. **Retrieving network deployment device by MAC address:**
    input: `macAddress`
    output: Device entry, which consists of `deviceType` and `macAddress`
-    
-   ```graphql
+
+   query at: [getDevice](src/main/resources/graphql-documents/getDevice.graphql)
+   
+   with input:
+   
+   ```json
    {
-      getDevice(macAddress: "AA:AA:AA:AA:AA:AA") {
-         ... on DeviceResultView {
-            macAddress
-            deviceType
-         }
-         ... on ValidationError {
-            message
-         }
-         ... on ServerError {
-            message
-            errorCode
-         }
-      }
+       "input": "AA:AA:AA:AA:AA:AA"
    }
-    ```
+   ```
 
 4. **Retrieving all registered network device topology**
    output: `Device topology` as tree structure, node should be represented as `macAddress`
-
-    ```graphql
-   {
-     fullTopology {
-       ... on JsonResult {
-         data
-       }
-       ... on ValidationError {
-         message
-       }
-       ... on ServerError {
-         message
-         errorCode
-       }
-     }
-   }
-    ```
+   
+   query at: [fullTopology](src/main/resources/graphql-documents/fullTopology.graphql)
 
 5. **Retrieving network device topology starting from a specific device.**
    input: `macAddress`
-   output: `Device topology` where root node is device with matching macAddress 
+   output: `Device topology` where root node is device with matching macAddress
 
-    ```graphql
+   query at: [deviceTopology](src/main/resources/graphql-documents/deviceTopology.graphql)
+
+   ```json
    {
-     deviceTopology(macAddress: "AA:AA:AA:AA:AA:AA") {
-       ... on JsonResult {
-         data
-       }
-       ... on ValidationError {
-         message
-       }
-       ... on ServerError {
-         message
-         errorCode
-       }
-     }
+       "input": "AA:AA:AA:AA:AA:AA"
    }
-    ```
+   ```
+
 
 ## Error Handling
 

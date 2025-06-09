@@ -2,8 +2,8 @@ spring:
   application:
     name: "network-controller"
 
-  profiles:
-    active: in-memory
+#  profiles:
+#    active: in-memory
 
   data:
     mongodb:

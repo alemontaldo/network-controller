@@ -38,7 +38,7 @@ dependencies {
 generateJava {
 	schemaPaths = ["${projectDir}/src/main/resources/graphql"]
 	packageName = 'com.alesmontaldo.network_controller.codegen'
-	generateClient = true
+	includeQueries = ["addDevice", "allDevicesSorted", "deviceTopology", "fullTopology", "getDevice"]
 	generateDataTypes = true
 	generateInterfaceMethodsForInterfaceFields = true
 	typeMapping = [

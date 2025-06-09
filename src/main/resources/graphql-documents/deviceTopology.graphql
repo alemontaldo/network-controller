@@ -1,0 +1,14 @@
+query DeviceTopology($input: MacAddress!) {
+    deviceTopology(macAddress: $input) {
+        ... on JsonResult {
+            data
+        }
+        ... on ValidationError {
+            message
+        }
+        ... on ServerError {
+            message
+            errorCode
+        }
+    }
+}

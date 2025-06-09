@@ -1,0 +1,15 @@
+query GetDevice($input: MacAddress!) {
+    getDevice(macAddress: $input) {
+        ... on DeviceResultView {
+            macAddress
+            deviceType
+        }
+        ... on ValidationError {
+            message
+        }
+        ... on ServerError {
+            message
+            errorCode
+        }
+    }
+}
