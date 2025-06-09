@@ -2,6 +2,9 @@ spring:
   application:
     name: "network-controller"
 
+  profiles:
+    active: in-memory
+
   data:
     mongodb:
       host: localhost
@@ -14,9 +17,3 @@ spring:
   graphql:
     graphiql:
       enabled: true
-
-logging:
-  level:
-    com.alesmontaldo.network_controller: DEBUG
-    org.springframework.graphql: DEBUG
-    org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer: TRACE

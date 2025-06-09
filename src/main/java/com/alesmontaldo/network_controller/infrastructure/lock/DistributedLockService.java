@@ -3,6 +3,7 @@ package com.alesmontaldo.network_controller.infrastructure.lock;
 import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.lock.TopologyLock;
 import com.mongodb.client.result.DeleteResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,6 +19,7 @@ import java.util.UUID;
  * Relies on MongoDB's TTL index for automatic expiration of locks.
  */
 @Service
+@Profile("!in-memory")
 public class DistributedLockService {
     private final MongoTemplate mongoTemplate;
     private final int LOCK_TIMEOUT_SECONDS = 30;

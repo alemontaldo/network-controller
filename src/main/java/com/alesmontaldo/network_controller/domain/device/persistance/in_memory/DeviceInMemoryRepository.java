@@ -3,7 +3,6 @@ package com.alesmontaldo.network_controller.domain.device.persistance.in_memory;
 import com.alesmontaldo.network_controller.codegen.types.*;
 import com.alesmontaldo.network_controller.domain.device.MacAddress;
 import com.alesmontaldo.network_controller.domain.device.persistance.DeviceRepository;
-import jakarta.validation.ValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Profile;
@@ -24,7 +23,8 @@ public class DeviceInMemoryRepository extends DeviceRepository {
 
     private static final Log log = LogFactory.getLog(DeviceInMemoryRepository.class);
     
-    private final Map<MacAddress, Device> devices = new ConcurrentHashMap<>();
+    // Made package-private for testing.
+    final Map<MacAddress, Device> devices = new ConcurrentHashMap<>();
     private final Object lockObject = new Object();
 
     @Override
@@ -40,10 +40,6 @@ public class DeviceInMemoryRepository extends DeviceRepository {
     @Override
     public Device save(Device device) {
         synchronized(lockObject) {
-            if (devices.get(device.getMacAddress()) != null) {
-                throw new ValidationException("Device with Mac Address: " + device.getMacAddress() + " already exists");
-            }
-
             log.info("Validating device addition for an eventual new cycle for device: " + device);
             validateEventualNewCycle(device);
             
@@ -132,5 +128,35 @@ public class DeviceInMemoryRepository extends DeviceRepository {
                     children
             );
         };
+    }
+    
+    // Methods added for testing purposes
+    
+    /**
+     * Clears all devices from the repository.
+     * This method is intended for testing purposes only.
+     */
+    public void clearAllDevices() {
+        devices.clear();
+    }
+    
+    /**
+     * Removes a specific device from the repository.
+     * This method is intended for testing purposes only.
+     * 
+     * @param mac The MAC address of the device to remove
+     */
+    public void removeDevice(MacAddress mac) {
+        devices.remove(mac);
+    }
+    
+    /**
+     * Directly adds a device to the repository without validation.
+     * This method is intended for testing purposes only.
+     * 
+     * @param device The device to add
+     */
+    public void addDeviceForTesting(Device device) {
+        devices.put(device.getMacAddress(), cloneDevice(device));
     }
 }

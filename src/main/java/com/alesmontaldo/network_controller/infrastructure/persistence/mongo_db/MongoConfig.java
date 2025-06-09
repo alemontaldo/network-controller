@@ -4,6 +4,7 @@ import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.co
 import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.converter.StringToMacAddressConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.event.ValidatingMongoEventListener;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 @EnableMongoRepositories(basePackages = {
         "com.alesmontaldo.network_controller.domain.device.persistance"
 })
+@Profile("!in-memory")
 public class MongoConfig {
 
     //TODO consider remove

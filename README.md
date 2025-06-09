@@ -249,3 +249,14 @@ and starting back on the localstack
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Debug
+
+for GraphQL troubleshooting I recommend these properties:
+```properties
+logging:
+  level:
+    com.alesmontaldo.network_controller: DEBUG
+    org.springframework.graphql: DEBUG
+    org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer: TRACE
+```
