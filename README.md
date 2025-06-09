@@ -19,6 +19,14 @@ This implementation enforces a strict acyclic topology. Devices cannot uplink to
 More precisely, the network can be thought of as a forest of trees because devices can be unconnected and multiple unconnected 
 regions of networks are allowed.
 
+### Validation Constraints
+
+The system enforces the following validations:
+- MAC addresses must be valid (format XX:XX:XX:XX:XX:XX or XX-XX-XX-XX-XX-XX with hexadecimal values)
+- Network topology must be a legal forest of trees (no cycles allowed)
+
+Note: Constraints on which device types can connect to others (e.g., whether a Switch can connect to an Access Point) are not enforced to preserve flexibility. These constraints could be added if needed for specific use cases.
+
 ## Technology Stack
 
 - Java 21
@@ -31,6 +39,8 @@ regions of networks are allowed.
 Two implementations are available for persistence:
 - **In-memory storage**: Use Spring profile `in-memory`
 - **MongoDB**: (Docker Compose configuration provided)
+
+---
 
 ## Running the Application
 
@@ -67,20 +77,23 @@ If you prefer instead the in-memory storage:
 
 After starting the app, a GraphQL client is available at: http://localhost:8080/graphiql?path=/graphql
 
-Note: the app can be compiled to native executable 
-(faster startup, smaller memory footprint). You can generate the executable with:
+### Deployment Recommendations
+
+For production deployment, we recommend running this application as a native executable:
 
 ```bash
 ./gradlew clean nativeCompile
 ```
 
-this will generate an executable at: build/native/nativeCompile/network-controller
-that you can simply execute from your terminal.
+This will generate an executable at: `build/native/nativeCompile/network-controller` that you can simply execute from your terminal. The application fully supports GraalVM native compilation for improved startup time and reduced memory footprint.
 
+A Dockerfile is not included in this repository but could be added if needed for containerized deployment.
 
 ## API Documentation
 
 ### GraphQL Schema
+
+All GraphQL queries and mutations for testing the service are provided in the `src/main/resources/graphql-documents` directory. You can use these directly in the GraphiQL interface.
 
 The API provides the following operations:
 
@@ -89,7 +102,7 @@ The API provides the following operations:
 
    query at: [addDevice](src/main/resources/graphql-documents/addDevice.graphql)
    
-   with input e.g:
+   Example input: (careful in graphiql to not insert into Headers instead of Variables)
    ```json
    {
        "input": {"macAddress": "AA:AA:AA:AA:AA:AA", "deviceType": "GATEWAY"}
@@ -108,8 +121,7 @@ The API provides the following operations:
 
    query at: [getDevice](src/main/resources/graphql-documents/getDevice.graphql)
    
-   with input:
-   
+   Example input:
    ```json
    {
        "input": "AA:AA:AA:AA:AA:AA"
@@ -127,12 +139,20 @@ The API provides the following operations:
 
    query at: [deviceTopology](src/main/resources/graphql-documents/deviceTopology.graphql)
 
+   Example input:
    ```json
    {
        "input": "AA:AA:AA:AA:AA:AA"
    }
    ```
 
+### Large Network Considerations
+
+For large network deployments, some considerations should be taken into account:
+
+- The `fullTopology` query might become resource-intensive for very large networks
+- Future enhancements could include configurable pagination and depth limits for topology queries
+- For production use with thousands of devices, additional optimizations may be necessary
 
 ## Error Handling
 
