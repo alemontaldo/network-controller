@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.graphql.GraphQlResponse;
 import org.springframework.graphql.client.HttpSyncGraphQlClient;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
@@ -30,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("mongo")
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database=network-controller_test_db"
+})
 @Import(RestClientAutoConfiguration.class)
 public class DeviceControllerTest {
 

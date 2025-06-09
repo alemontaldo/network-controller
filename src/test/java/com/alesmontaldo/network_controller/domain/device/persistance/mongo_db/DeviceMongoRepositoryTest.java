@@ -7,8 +7,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 @ActiveProfiles("mongo")
+@TestPropertySource(properties = {
+        "spring.data.mongodb.database=network-controller_test_db"
+})
 public class DeviceMongoRepositoryTest extends AbstractDeviceRepositoryTest {
 
     @Autowired
