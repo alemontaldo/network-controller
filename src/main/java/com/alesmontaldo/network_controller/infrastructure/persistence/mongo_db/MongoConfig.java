@@ -19,7 +19,6 @@ import java.util.Arrays;
 @Profile("!in-memory")
 public class MongoConfig {
 
-    //TODO consider remove
     @Bean
     public ValidatingMongoEventListener validatingMongoEventListener(LocalValidatorFactoryBean factory) {
         return new ValidatingMongoEventListener(factory);

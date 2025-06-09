@@ -16,7 +16,7 @@ public abstract class DeviceDocument {
     protected DeviceType deviceType;
 
     // @Transactional operations are not needed in the scope of this
-    // assignment, but IMHO it's better to include @Version since the beginning
+    // demo, but IMHO it's better to include @Version since the beginning
     // for future-proofing
     @Version
     private Long version;

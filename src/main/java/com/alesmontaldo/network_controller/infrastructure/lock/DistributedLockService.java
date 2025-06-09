@@ -1,6 +1,6 @@
 package com.alesmontaldo.network_controller.infrastructure.lock;
 
-import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.lock.TopologyLock;
+import com.alesmontaldo.network_controller.domain.device.persistance.mongo_db.lock.TopologyLockDocument;
 import com.mongodb.client.result.DeleteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -38,7 +38,7 @@ public class DistributedLockService {
         Date now = new Date();
         Date expiration = new Date(now.getTime() + (LOCK_TIMEOUT_SECONDS * 1000));
         
-        TopologyLock newLock = new TopologyLock(lockToken, now, expiration);
+        TopologyLockDocument newLock = new TopologyLockDocument(lockToken, now, expiration);
         
         try {
             // Try to insert the lock document - will fail if it already exists
@@ -66,7 +66,7 @@ public class DistributedLockService {
                    .and("owner").is(lockToken)
         );
         
-        DeleteResult result = mongoTemplate.remove(query, TopologyLock.class);
+        DeleteResult result = mongoTemplate.remove(query, TopologyLockDocument.class);
         return result.getDeletedCount() > 0;
     }
 }

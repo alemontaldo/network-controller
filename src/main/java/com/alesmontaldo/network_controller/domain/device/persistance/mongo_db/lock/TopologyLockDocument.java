@@ -10,7 +10,7 @@ import java.util.Date;
  * Used to ensure that only one thread/process can modify the network topology at a time.
  */
 @Document(collection = "topology_locks")
-public class TopologyLock {
+public class TopologyLockDocument {
     @Id
     private String id = "TOPOLOGY_LOCK"; // Single lock for the entire topology
     
@@ -18,9 +18,9 @@ public class TopologyLock {
     private Date acquiredAt;     // When the lock was acquired
     private Date expiresAt;      // Automatic expiration to prevent deadlocks
     
-    public TopologyLock() {}
+    public TopologyLockDocument() {}
     
-    public TopologyLock(String owner, Date acquiredAt, Date expiresAt) {
+    public TopologyLockDocument(String owner, Date acquiredAt, Date expiresAt) {
         this.owner = owner;
         this.acquiredAt = acquiredAt;
         this.expiresAt = expiresAt;
