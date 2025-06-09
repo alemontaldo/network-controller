@@ -73,10 +73,6 @@ public class DeviceMongoRepository extends DeviceRepository {
         }
         
         try {
-            if (findById(device.getMacAddress()).isPresent()) {
-                throw new ValidationException("Device with Mac Address: " + device.getMacAddress() + " already exists");
-            }
-
             validateEventualNewCycle(device);
 
             log.info("Adding new device: " + device);

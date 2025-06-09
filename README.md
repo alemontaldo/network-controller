@@ -226,7 +226,7 @@ Build the project:
 ./gradlew clean build
 ```
 
-Run tests:
+Run tests: (requires Mongo DB running)
 
 ```bash
 ./gradlew test
